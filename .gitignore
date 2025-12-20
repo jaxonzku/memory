@@ -1,0 +1,52 @@
+# -----------------------
+# Node dependencies
+# -----------------------
+node_modules/
+
+# -----------------------
+# Build / output folders
+# -----------------------
+dist/
+build/
+public/build/
+
+# -----------------------
+# Environment files
+# -----------------------
+.env
+.env.local
+.env.*.local
+
+# -----------------------
+# Logs
+# -----------------------
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# -----------------------
+# Cache
+# -----------------------
+.cache/
+.vite/
+.parcel-cache/
+
+# -----------------------
+# OS files
+# -----------------------
+.DS_Store
+Thumbs.db
+
+# -----------------------
+# Editor / IDE
+# -----------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# -----------------------
+# Pixi / Assets temp
+# -----------------------
+*.map
