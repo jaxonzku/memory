@@ -25,7 +25,7 @@ export class Card extends Container {
       .roundRect(-size / 2, -size / 2, size, size, 15)
       .fill(0xed427c)
       .stroke({
-        width: 5,
+        width: 8,
         color: "white",
       });
 
@@ -33,7 +33,7 @@ export class Card extends Container {
       .roundRect(-size / 2, -size / 2, size, size, 15)
       .fill(backColor)
       .stroke({
-        width: 5,
+        width: 8,
         color: "white",
       });
     this.back.visible = false;

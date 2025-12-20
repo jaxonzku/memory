@@ -61,7 +61,7 @@ export class CardGrid extends Container {
     deck.forEach((id, index) => {
       const color = generateColor(id);
 
-      const card = new Card(80, color, false);
+      const card = new Card(80, color, true);
       const rotationDeg = STATIC_ROTATIONS[index % STATIC_ROTATIONS.length];
       card.rotation = rotationDeg * (Math.PI / 180);
       card.id = id;
@@ -79,6 +79,65 @@ export class CardGrid extends Container {
       this.cards.push(card);
       this.addChild(card);
     });
+    const ROW_LAYOUT = [3, 4, 4, 4, 4, 3];
+    const CARD_SIZE = 80;
+    const GAP = 30;
+    const SIDE_COUNT = 3;
+    const SIDE_OFFSET_X = 270;
+
+    // Total height of center block
+    const totalRows = ROW_LAYOUT.length;
+    const totalHeight = totalRows * CARD_SIZE + (totalRows - 1) * GAP;
+
+    // Because cards are CENTER-ANCHORed
+    const startY = -totalHeight / 2 + CARD_SIZE / 2;
+
+    let cardIndex = 0;
+
+    // -------- CENTER BLOCK --------
+    ROW_LAYOUT.forEach((count, row) => {
+      const rowWidth = count * CARD_SIZE + (count - 1) * GAP;
+
+      // center-based X
+      const startX = -rowWidth / 2 + CARD_SIZE / 2;
+
+      for (let i = 0; i < count; i++) {
+        const card = this.cards[cardIndex];
+        if (!card) return;
+
+        card.x = startX + i * (CARD_SIZE + GAP);
+        card.y = startY + row * (CARD_SIZE + GAP);
+
+        cardIndex++;
+      }
+    });
+
+    // -------- SIDE COLUMNS --------
+    const sideTotalHeight = SIDE_COUNT * CARD_SIZE + (SIDE_COUNT - 1) * GAP;
+
+    const sideStartY = -sideTotalHeight / 2 + CARD_SIZE / 2;
+
+    // LEFT
+    for (let i = 0; i < SIDE_COUNT; i++) {
+      const card = this.cards[cardIndex];
+      if (!card) break;
+
+      card.x = -SIDE_OFFSET_X;
+      card.y = sideStartY + i * (CARD_SIZE + GAP);
+
+      cardIndex++;
+    }
+
+    // RIGHT
+    for (let i = 0; i < SIDE_COUNT; i++) {
+      const card = this.cards[cardIndex];
+      if (!card) break;
+
+      card.x = SIDE_OFFSET_X;
+      card.y = sideStartY + i * (CARD_SIZE + GAP);
+
+      cardIndex++;
+    }
   }
 
   private onCardClick(card: Card) {

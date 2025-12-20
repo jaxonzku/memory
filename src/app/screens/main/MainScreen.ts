@@ -4,42 +4,50 @@ import { FancyButton } from "@pixi/ui";
 import { animate } from "motion";
 import type { AnimationPlaybackControls } from "motion/react";
 import type { Ticker } from "pixi.js";
-import { Container } from "pixi.js";
-
 import { CardGrid } from "./CardGrid";
 import { engine } from "../../getEngine";
 import { PausePopup } from "../../popups/PausePopup";
 import { SettingsPopup } from "../../popups/SettingsPopup";
-import { Button } from "../../ui/Button";
-import { Text } from "pixi.js";
+import { gsap } from "gsap";
+import { Container, Text, Sprite, Texture } from "pixi.js";
+const BLUE_BG = 0x7fb7d6; // blue player
+const RED_BG = 0xf2a07b; // red player
 
 /** The screen that holds the app */
 export class MainScreen extends Container {
   public static assetBundles = ["main"];
-
+  private bg!: Sprite;
   public mainContainer: Container;
-
   private pauseButton: FancyButton;
   private settingsButton: FancyButton;
-  // private addButton: Button;
-  // private removeButton: Button;
   private blueScore = 0;
   private redScore = 0;
-
   private blueScoreText!: Text;
   private redScoreText!: Text;
   private turnText!: Text;
-
   private paused = false;
+  private bgBlue!: Sprite;
+  private bgRed!: Sprite;
 
   constructor() {
     super();
+    this.bgBlue = new Sprite(Texture.WHITE);
+    this.bgBlue.tint = BLUE_BG;
+    this.bgBlue.alpha = 1;
+
+    this.bgRed = new Sprite(Texture.WHITE);
+    this.bgRed.tint = RED_BG;
+    this.bgRed.alpha = 0;
+
+    this.addChild(this.bgBlue);
+    this.addChild(this.bgRed);
 
     this.mainContainer = new Container();
     this.addChild(this.mainContainer);
 
     // CARD GRID
-    const grid = new CardGrid(18, 6, 100, ({ player, matched }) => {
+    const grid = new CardGrid(14, 4, 100, ({ player, matched }) => {
+      // update score
       if (matched) {
         if (player === "blue") {
           this.blueScore++;
@@ -48,12 +56,29 @@ export class MainScreen extends Container {
           this.redScore++;
           this.redScoreText.text = `Red: ${this.redScore}`;
         }
+      }
+
+      // determine current turn AFTER move
+      const isBlueTurn = matched
+        ? player === "blue" // same player continues
+        : player !== "blue"; // switch player on miss
+
+      // update turn text
+      this.turnText.text = `Turn: ${isBlueTurn ? "Blue" : "Red"}`;
+      this.turnText.style.fill = isBlueTurn ? 0x3b82f6 : 0xef4444;
+
+      // update background EVERY turn end]
+      gsap.killTweensOf([this.bgBlue, this.bgRed]);
+
+      if (isBlueTurn) {
+        gsap.to(this.bgBlue, { alpha: 1, duration: 0.4, ease: "sine.out" });
+        gsap.to(this.bgRed, { alpha: 0, duration: 0.4, ease: "sine.out" });
       } else {
-        const next = player === "blue" ? "Red" : "Blue";
-        this.turnText.text = `Turn: ${next}`;
-        this.turnText.style.fill = next === "Blue" ? 0x3b82f6 : 0xef4444;
+        gsap.to(this.bgBlue, { alpha: 0, duration: 0.4, ease: "sine.out" });
+        gsap.to(this.bgRed, { alpha: 1, duration: 0.4, ease: "sine.out" });
       }
     });
+
     this.blueScoreText = new Text({
       text: "Blue: 0",
       style: { fill: 0x3b82f6, fontSize: 24 },
@@ -132,6 +157,12 @@ export class MainScreen extends Container {
   public resize(width: number, height: number) {
     this.mainContainer.x = width * 0.5;
     this.mainContainer.y = height * 0.5;
+
+    this.bgBlue.width = width;
+    this.bgBlue.height = height;
+
+    this.bgRed.width = width;
+    this.bgRed.height = height;
 
     this.pauseButton.x = 30;
     this.pauseButton.y = 30;
