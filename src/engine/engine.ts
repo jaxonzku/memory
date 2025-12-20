@@ -38,6 +38,8 @@ export class CreationEngine extends Application {
   public async init(opts: Partial<ApplicationOptions>): Promise<void> {
     opts.resizeTo ??= window;
     opts.resolution ??= getResolution();
+    opts.antialias = true;
+    opts.autoDensity = true;
 
     await super.init(opts);
 
@@ -58,7 +60,7 @@ export class CreationEngine extends Application {
 
   public override destroy(
     rendererDestroyOptions: RendererDestroyOptions = false,
-    options: DestroyOptions = false,
+    options: DestroyOptions = false
   ): void {
     document.removeEventListener("visibilitychange", this.visibilityChange);
     super.destroy(rendererDestroyOptions, options);
