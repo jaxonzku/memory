@@ -9,7 +9,7 @@ import { engine } from "../../getEngine";
 import { PausePopup } from "../../popups/PausePopup";
 import { SettingsPopup } from "../../popups/SettingsPopup";
 import { gsap } from "gsap";
-import { Container, Text, Sprite, Texture, Graphics } from "pixi.js";
+import { Container, Text, Sprite, Texture, Graphics, Rectangle } from "pixi.js";
 const BLUE_BG = 0x7fb7d6; // blue player
 const RED_BG = 0xf2a07b; // red player
 
@@ -56,40 +56,53 @@ export class MainScreen extends Container {
   private createTurnPill(
     bgColor: number,
     text: string,
-    direction: "left" | "right"
+    side: "left" | "right"
   ): { container: Container; label: Text } {
     const container = new Container();
     const bg = new Graphics();
 
-    const BODY_W = 150;
-    const BODY_H = 160;
-    const RADIUS = 80;
-    const CIRCLE_PULL = 20;
+    const RADIUS = 170;
+    const SIZE = RADIUS * 2;
+    const TEXT_OFFSET = RADIUS * 0.4;
 
-    if (direction === "right") {
-      // Body
-      bg.roundRect(0, 0, BODY_W, BODY_H, 30).fill(bgColor);
-      // Circle on right
-      bg.circle(BODY_W - CIRCLE_PULL, BODY_H / 2, RADIUS).fill(bgColor);
+    // fix bounds
+    container.hitArea = new Rectangle(0, 0, SIZE, SIZE);
+
+    if (side === "left") {
+      // TOP-LEFT quarter (faces inward)
+      bg.beginFill(bgColor);
+      bg.moveTo(0, 0);
+      bg.arc(0, 0, RADIUS, 0, Math.PI / 2);
+      bg.lineTo(0, 0);
+      bg.endFill();
     } else {
-      // Circle on left
-      bg.circle(RADIUS + CIRCLE_PULL, BODY_H / 2, RADIUS).fill(bgColor); // Body shifted right
-      bg.roundRect(RADIUS, 0, BODY_W, BODY_H, 30).fill(bgColor);
+      // TOP-RIGHT quarter (faces inward)
+      bg.beginFill(bgColor);
+      bg.moveTo(SIZE, 0);
+      bg.arc(SIZE, 0, RADIUS, Math.PI / 2, Math.PI);
+      bg.lineTo(SIZE, 0);
+      bg.endFill();
     }
 
     const label = new Text({
       text,
       style: {
         fill: 0xffffff,
-        fontSize: 26,
+        fontSize: 22, // ⬅️ fits now
         fontWeight: "bold",
         fontFamily: "Arial Rounded MT Bold",
       },
     });
 
     label.anchor.set(0.5);
-    label.x = bg.width / 2;
-    label.y = bg.height / 2;
+
+    if (side === "left") {
+      label.x = TEXT_OFFSET;
+      label.y = TEXT_OFFSET;
+    } else {
+      label.x = SIZE - TEXT_OFFSET;
+      label.y = TEXT_OFFSET;
+    }
 
     container.addChild(bg, label);
     container.visible = false;
@@ -99,53 +112,60 @@ export class MainScreen extends Container {
   private createScorePill(
     bgColor: number,
     textColor: number,
-    direction: "left" | "right" = "right"
+    side: "left" | "right"
   ): { container: Container; label: Text } {
     const container = new Container();
     const bg = new Graphics();
 
-    const BODY_W = 130;
-    const BODY_H = 160;
-    const RADIUS = 80;
-    const CIRCLE_PULL = 20;
+    const RADIUS = 170;
+    const SIZE = RADIUS * 2;
 
-    if (direction === "right") {
-      // Body
-      bg.roundRect(0, 0, BODY_W, BODY_H, 30).fill(bgColor);
-      // Circle on right
-      bg.circle(BODY_W - CIRCLE_PULL, BODY_H / 2, RADIUS).fill(bgColor);
+    // IMPORTANT: force container bounds
+    container.hitArea = new Rectangle(0, 0, SIZE, SIZE);
+    if (side === "left") {
+      bg.beginFill(bgColor);
+      bg.moveTo(0, SIZE);
+      bg.arc(0, SIZE, RADIUS, Math.PI * 1.5, Math.PI * 2);
+      bg.lineTo(0, SIZE);
+      bg.endFill();
+      // bg.stroke({ width: 5, color: "white" });
     } else {
-      // Circle on left
-      bg.circle(RADIUS + CIRCLE_PULL, BODY_H / 2, RADIUS).fill(bgColor); // Body shifted right
-      bg.roundRect(RADIUS, 0, BODY_W, BODY_H, 30).fill(bgColor);
+      bg.beginFill(bgColor);
+      bg.moveTo(SIZE, SIZE);
+      bg.arc(SIZE, SIZE, RADIUS, Math.PI, Math.PI * 1.5);
+      bg.lineTo(SIZE, SIZE);
+      bg.endFill();
+      // bg.stroke({ width: 5, color: "white" });
     }
 
-    // White border
-    // bg.stroke({
-    //   width: 6,
-    //   color: 0xffffff,
-    //   alignment: 0.5,
-    // });
-
-    // Score text
     const label = new Text({
       text: "0",
+
       style: {
         fill: textColor,
-        fontSize: 42,
+        fontSize: 45,
         fontWeight: "bold",
         fontFamily: "Arial Rounded MT Bold",
       },
     });
 
-    // Center text using real bounds
     label.anchor.set(0.5);
-    label.x = bg.width / 2;
-    label.y = bg.height / 2;
+
+    const TEXT_OFFSET = RADIUS * 0.45;
+    if (side === "left") {
+      // bottom-left quarter
+      label.x = TEXT_OFFSET;
+      label.y = SIZE - TEXT_OFFSET;
+    } else {
+      // bottom-right quarter
+      label.x = SIZE - TEXT_OFFSET;
+      label.y = SIZE - TEXT_OFFSET;
+    }
 
     container.addChild(bg, label);
     return { container, label };
   }
+
   constructor() {
     super();
     this.bgBlue = new Sprite(Texture.WHITE);
@@ -215,12 +235,13 @@ export class MainScreen extends Container {
         gsap.to(this.bgRed, { alpha: 1, duration: 0.4, ease: "sine.out" });
       }
     });
-    const blueTurn = this.createTurnPill(0x3b82f6, "Blue's Turn", "right");
+    const blueTurn = this.createTurnPill(0x3b82f6, "Blue's Turn", "left");
     this.blueTurnPill = blueTurn.container;
     this.blueTurnLabel = blueTurn.label;
     this.addChild(this.blueTurnPill);
 
-    const redTurn = this.createTurnPill(0xef4444, "Red's Turn", "left");
+    // Red → TOP-RIGHT
+    const redTurn = this.createTurnPill(0xef4444, "Red's Turn", "right");
     this.redTurnPill = redTurn.container;
     this.redTurnLabel = redTurn.label;
     this.addChild(this.redTurnPill);
@@ -229,12 +250,12 @@ export class MainScreen extends Container {
     this.blueTurnPill.visible = true;
     this.redTurnPill.visible = false;
 
-    const blue = this.createScorePill(0x1f2933, 0x7fb7d6, "right");
+    const blue = this.createScorePill(0x3b82f6, 0xffffff, "left");
     this.blueScorePill = blue.container;
     this.blueScoreLabel = blue.label;
     this.addChild(this.blueScorePill);
 
-    const red = this.createScorePill(0x1f2933, 0xf2a07b, "left");
+    const red = this.createScorePill(0xef4444, 0xffffff, "right");
     this.redScorePill = red.container;
     this.redScoreLabel = red.label;
     this.addChild(this.redScorePill);
@@ -312,56 +333,58 @@ export class MainScreen extends Container {
     this.bgRed.width = width;
     this.bgRed.height = height;
 
-    // PAUSE button → middle of LEFT side
-    this.pauseButton.x = 30;
-    this.pauseButton.y = height / 2;
+    const BOTTOM_PADDING = 30;
+    const BUTTON_GAP = 60;
 
-    // SETTINGS button → middle of RIGHT side
-    this.settingsButton.x = width - 30;
-    this.settingsButton.y = height / 2;
+    // PAUSE button → bottom center (left)
+    this.pauseButton.x = width / 2 - BUTTON_GAP;
+    this.pauseButton.y = height - BOTTOM_PADDING;
 
-    const turnY = height * 0.2;
-    const EDGE_PADDING_TURN = 20;
-    const BODY_W_TURN = 170;
+    // SETTINGS button → bottom center (right)
+    this.settingsButton.x = width / 2 + BUTTON_GAP;
+    this.settingsButton.y = height - BOTTOM_PADDING;
+    const RADIUS_TURN = 170;
+    const SIZE_TURN = RADIUS_TURN * 2;
 
-    this.alignPillX(
-      this.blueTurnPill,
-      "left",
-      width,
-      BODY_W_TURN,
-      EDGE_PADDING_TURN
-    );
-    this.alignPillX(
-      this.redTurnPill,
-      "right",
-      width,
-      BODY_W_TURN,
-      EDGE_PADDING_TURN
-    );
+    // TOP-left
+    this.blueTurnPill.x = 0;
+    this.blueTurnPill.y = 0;
 
-    this.blueTurnPill.y = turnY - this.blueTurnPill.getLocalBounds().height / 2;
-    this.redTurnPill.y = turnY - this.redTurnPill.getLocalBounds().height / 2;
+    // TOP-right
+    this.redTurnPill.x = width - SIZE_TURN;
+    this.redTurnPill.y = 0;
 
-    const pillBounds = this.blueScorePill.getLocalBounds();
-    const pillHalfH = pillBounds.height / 2;
-    const targetY = height * 0.8;
+    const RADIUS = 170;
+    const SIZE = RADIUS * 2;
+    // BLUE – bottom-left
+    this.blueScorePill.x = 0;
+    this.blueScorePill.y = height - SIZE;
 
-    this.blueScorePill.y = targetY - pillHalfH;
-    this.redScorePill.y = targetY - pillHalfH;
-    const EDGE_PADDING = 20;
-    const BODY_W = 130; // same value used in createScorePill()
-    // BLUE (flat edge on LEFT, circle faces right → inward)
-    this.blueScorePill.x =
-      EDGE_PADDING - (this.blueScorePill.getLocalBounds().width - BODY_W);
-
-    // RED (flat edge on RIGHT, circle faces left → inward)
-    this.redScorePill.x = width - BODY_W - EDGE_PADDING;
-
-    // this.turnText.x = width / 2 - this.turnText.width / 2;
-    // this.turnText.y = 20;
+    // RED – bottom-right
+    this.redScorePill.x = width - SIZE;
+    this.redScorePill.y = height - SIZE;
   }
 
   public async show(): Promise<void> {
+    // await Assets.load([
+    //   "/assets/preload/coookie_man.",
+    //   "/assets/preload/cup_cake.",
+    //   "/assets/preload/gift_pack.",
+    //   "/assets/preload/hang_socks.",
+    //   "/assets/preload/head_phone.",
+    //   "/assets/preload/pop_cone.",
+    //   "/assets/preload/shiny_ball.",
+    //   "/assets/preload/snow_man.",
+    //   "/assets/preload/xmas_bell.",
+    //   "/assets/preload/xmas_cards.",
+    //   "/assets/preload/xmas_hat.",
+    //   "/assets/preload/xmas_home.",
+    //   "/assets/preload/xmas_papa.",
+    //   "/assets/preload/xmas_tree.",
+    // ]);
+
+    // CARD GRID
+
     engine().audio.bgm.play("main/sounds/bgm-main.mp3", { volume: 0.5 });
 
     const elements = [this.pauseButton, this.settingsButton];
