@@ -48,7 +48,7 @@ export class CardGrid extends Container {
   constructor(
     pairs = 18,
     cols = 6,
-    gap = 100,
+    gap = 400,
     onTurnEnd?: (result: TurnResult) => void
   ) {
     super();
@@ -61,7 +61,7 @@ export class CardGrid extends Container {
     deck.forEach((id, index) => {
       const color = generateColor(id);
 
-      const card = new Card(80, color, true);
+      const card = new Card(100, color, true);
       const rotationDeg = STATIC_ROTATIONS[index % STATIC_ROTATIONS.length];
       card.rotation = rotationDeg * (Math.PI / 180);
       card.id = id;
@@ -81,9 +81,9 @@ export class CardGrid extends Container {
     });
     const ROW_LAYOUT = [3, 4, 4, 4, 4, 3];
     const CARD_SIZE = 80;
-    const GAP = 30;
+    const GAP = 50;
     const SIDE_COUNT = 3;
-    const SIDE_OFFSET_X = 270;
+    const SIDE_OFFSET_X = 320;
 
     // Total height of center block
     const totalRows = ROW_LAYOUT.length;
@@ -164,12 +164,14 @@ export class CardGrid extends Container {
     if (a.id === b.id) {
       console.log("MATCH ✅");
 
-      a.remove();
-      b.remove();
+      a.animateRemove();
+      b.animateRemove();
       this.onTurnEnd?.({ player, matched: true });
       // same player continues
     } else {
       console.log("NO MATCH ❌");
+      a.shake();
+      b.shake();
 
       a.hide();
       b.hide();

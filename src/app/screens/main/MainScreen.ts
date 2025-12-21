@@ -9,7 +9,7 @@ import { engine } from "../../getEngine";
 import { PausePopup } from "../../popups/PausePopup";
 import { SettingsPopup } from "../../popups/SettingsPopup";
 import { gsap } from "gsap";
-import { Container, Text, Sprite, Texture } from "pixi.js";
+import { Container, Text, Sprite, Texture, Graphics } from "pixi.js";
 const BLUE_BG = 0x7fb7d6; // blue player
 const RED_BG = 0xf2a07b; // red player
 
@@ -24,11 +24,128 @@ export class MainScreen extends Container {
   private redScore = 0;
   private blueScoreText!: Text;
   private redScoreText!: Text;
-  private turnText!: Text;
+  // private turnText!: Text;
   private paused = false;
   private bgBlue!: Sprite;
   private bgRed!: Sprite;
+  private blueScorePill!: Container;
+  private redScorePill!: Container;
+  private blueScoreLabel!: Text;
+  private redScoreLabel!: Text;
+  private blueTurnPill!: Container;
+  private redTurnPill!: Container;
+  private blueTurnLabel!: Text;
+  private redTurnLabel!: Text;
 
+  private alignPillX(
+    pill: Container,
+    side: "left" | "right",
+    screenWidth: number,
+    flatBodyWidth: number,
+    edgePadding: number
+  ) {
+    const bounds = pill.getLocalBounds();
+    const overhang = bounds.width - flatBodyWidth;
+
+    if (side === "left") {
+      pill.x = edgePadding - overhang;
+    } else {
+      pill.x = screenWidth - flatBodyWidth - edgePadding;
+    }
+  }
+  private createTurnPill(
+    bgColor: number,
+    text: string,
+    direction: "left" | "right"
+  ): { container: Container; label: Text } {
+    const container = new Container();
+    const bg = new Graphics();
+
+    const BODY_W = 150;
+    const BODY_H = 160;
+    const RADIUS = 80;
+    const CIRCLE_PULL = 20;
+
+    if (direction === "right") {
+      // Body
+      bg.roundRect(0, 0, BODY_W, BODY_H, 30).fill(bgColor);
+      // Circle on right
+      bg.circle(BODY_W - CIRCLE_PULL, BODY_H / 2, RADIUS).fill(bgColor);
+    } else {
+      // Circle on left
+      bg.circle(RADIUS + CIRCLE_PULL, BODY_H / 2, RADIUS).fill(bgColor); // Body shifted right
+      bg.roundRect(RADIUS, 0, BODY_W, BODY_H, 30).fill(bgColor);
+    }
+
+    const label = new Text({
+      text,
+      style: {
+        fill: 0xffffff,
+        fontSize: 26,
+        fontWeight: "bold",
+        fontFamily: "Arial Rounded MT Bold",
+      },
+    });
+
+    label.anchor.set(0.5);
+    label.x = bg.width / 2;
+    label.y = bg.height / 2;
+
+    container.addChild(bg, label);
+    container.visible = false;
+
+    return { container, label };
+  }
+  private createScorePill(
+    bgColor: number,
+    textColor: number,
+    direction: "left" | "right" = "right"
+  ): { container: Container; label: Text } {
+    const container = new Container();
+    const bg = new Graphics();
+
+    const BODY_W = 130;
+    const BODY_H = 160;
+    const RADIUS = 80;
+    const CIRCLE_PULL = 20;
+
+    if (direction === "right") {
+      // Body
+      bg.roundRect(0, 0, BODY_W, BODY_H, 30).fill(bgColor);
+      // Circle on right
+      bg.circle(BODY_W - CIRCLE_PULL, BODY_H / 2, RADIUS).fill(bgColor);
+    } else {
+      // Circle on left
+      bg.circle(RADIUS + CIRCLE_PULL, BODY_H / 2, RADIUS).fill(bgColor); // Body shifted right
+      bg.roundRect(RADIUS, 0, BODY_W, BODY_H, 30).fill(bgColor);
+    }
+
+    // White border
+    // bg.stroke({
+    //   width: 6,
+    //   color: 0xffffff,
+    //   alignment: 0.5,
+    // });
+
+    // Score text
+    const label = new Text({
+      text: "0",
+      style: {
+        fill: textColor,
+        fontSize: 42,
+        fontWeight: "bold",
+        fontFamily: "Arial Rounded MT Bold",
+      },
+    });
+
+    // Center text using real bounds
+    label.anchor.set(0.5);
+    label.x = bg.width / 2;
+    label.y = bg.height / 2;
+
+    container.addChild(bg, label);
+    return { container, label };
+  }
   constructor() {
     super();
     this.bgBlue = new Sprite(Texture.WHITE);
@@ -50,11 +167,21 @@ export class MainScreen extends Container {
       // update score
       if (matched) {
         if (player === "blue") {
+          gsap.fromTo(
+            this.blueScorePill.scale,
+            { x: 1, y: 1 },
+            { x: 1.15, y: 1.15, duration: 0.15, yoyo: true, repeat: 1 }
+          );
           this.blueScore++;
-          this.blueScoreText.text = `Blue: ${this.blueScore}`;
+          this.blueScoreLabel.text = String(this.blueScore);
         } else {
+          gsap.fromTo(
+            this.redScorePill.scale,
+            { x: 1, y: 1 },
+            { x: 1.15, y: 1.15, duration: 0.15, yoyo: true, repeat: 1 }
+          );
           this.redScore++;
-          this.redScoreText.text = `Red: ${this.redScore}`;
+          this.redScoreLabel.text = String(this.redScore);
         }
       }
 
@@ -64,8 +191,18 @@ export class MainScreen extends Container {
         : player !== "blue"; // switch player on miss
 
       // update turn text
-      this.turnText.text = `Turn: ${isBlueTurn ? "Blue" : "Red"}`;
-      this.turnText.style.fill = isBlueTurn ? 0x3b82f6 : 0xef4444;
+      // this.turnText.text = `Turn: ${isBlueTurn ? "Blue" : "Red"}`;
+      // this.turnText.style.fill = isBlueTurn ? 0x3b82f6 : 0xef4444;
+      this.blueTurnPill.visible = isBlueTurn;
+      this.redTurnPill.visible = !isBlueTurn;
+
+      const pill = isBlueTurn ? this.blueTurnPill : this.redTurnPill;
+
+      gsap.fromTo(
+        pill,
+        { alpha: 0, x: pill.x - 30 },
+        { alpha: 1, x: pill.x, duration: 0.3, ease: "power2.out" }
+      );
 
       // update background EVERY turn end]
       gsap.killTweensOf([this.bgBlue, this.bgRed]);
@@ -78,24 +215,35 @@ export class MainScreen extends Container {
         gsap.to(this.bgRed, { alpha: 1, duration: 0.4, ease: "sine.out" });
       }
     });
+    const blueTurn = this.createTurnPill(0x3b82f6, "Blue's Turn", "right");
+    this.blueTurnPill = blueTurn.container;
+    this.blueTurnLabel = blueTurn.label;
+    this.addChild(this.blueTurnPill);
 
-    this.blueScoreText = new Text({
-      text: "Blue: 0",
-      style: { fill: 0x3b82f6, fontSize: 24 },
-    });
-    this.addChild(this.blueScoreText);
+    const redTurn = this.createTurnPill(0xef4444, "Red's Turn", "left");
+    this.redTurnPill = redTurn.container;
+    this.redTurnLabel = redTurn.label;
+    this.addChild(this.redTurnPill);
 
-    this.redScoreText = new Text({
-      text: "Red: 0",
-      style: { fill: 0xef4444, fontSize: 24 },
-    });
-    this.addChild(this.redScoreText);
+    // Blue starts
+    this.blueTurnPill.visible = true;
+    this.redTurnPill.visible = false;
 
-    this.turnText = new Text({
-      text: "Turn: Blue",
-      style: { fill: 0x3b82f6, fontSize: 26, fontWeight: "bold" },
-    });
-    this.addChild(this.turnText);
+    const blue = this.createScorePill(0x1f2933, 0x7fb7d6, "right");
+    this.blueScorePill = blue.container;
+    this.blueScoreLabel = blue.label;
+    this.addChild(this.blueScorePill);
+
+    const red = this.createScorePill(0x1f2933, 0xf2a07b, "left");
+    this.redScorePill = red.container;
+    this.redScoreLabel = red.label;
+    this.addChild(this.redScorePill);
+
+    // this.turnText = new Text({
+    //   text: "Turn: Blue",
+    //   style: { fill: 0x3b82f6, fontSize: 26, fontWeight: "bold" },
+    // });
+    // this.addChild(this.turnText);
 
     const bounds = grid.getLocalBounds();
     grid.pivot.set(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
@@ -164,26 +312,53 @@ export class MainScreen extends Container {
     this.bgRed.width = width;
     this.bgRed.height = height;
 
+    // PAUSE button → middle of LEFT side
     this.pauseButton.x = 30;
-    this.pauseButton.y = 30;
+    this.pauseButton.y = height / 2;
 
+    // SETTINGS button → middle of RIGHT side
     this.settingsButton.x = width - 30;
-    this.settingsButton.y = 30;
+    this.settingsButton.y = height / 2;
 
-    // this.removeButton.x = width / 2 - 100;
-    // this.removeButton.y = height - 75;
+    const turnY = height * 0.2;
+    const EDGE_PADDING_TURN = 20;
+    const BODY_W_TURN = 170;
 
-    // this.addButton.x = width / 2 + 100;
-    // this.addButton.y = height - 75;
+    this.alignPillX(
+      this.blueTurnPill,
+      "left",
+      width,
+      BODY_W_TURN,
+      EDGE_PADDING_TURN
+    );
+    this.alignPillX(
+      this.redTurnPill,
+      "right",
+      width,
+      BODY_W_TURN,
+      EDGE_PADDING_TURN
+    );
 
-    this.blueScoreText.x = 20;
-    this.blueScoreText.y = height / 2;
+    this.blueTurnPill.y = turnY - this.blueTurnPill.getLocalBounds().height / 2;
+    this.redTurnPill.y = turnY - this.redTurnPill.getLocalBounds().height / 2;
 
-    this.redScoreText.x = width - this.redScoreText.width - 20;
-    this.redScoreText.y = height / 2;
+    const pillBounds = this.blueScorePill.getLocalBounds();
+    const pillHalfH = pillBounds.height / 2;
+    const targetY = height * 0.8;
 
-    this.turnText.x = width / 2 - this.turnText.width / 2;
-    this.turnText.y = 20;
+    this.blueScorePill.y = targetY - pillHalfH;
+    this.redScorePill.y = targetY - pillHalfH;
+    const EDGE_PADDING = 20;
+    const BODY_W = 130; // same value used in createScorePill()
+    // BLUE (flat edge on LEFT, circle faces right → inward)
+    this.blueScorePill.x =
+      EDGE_PADDING - (this.blueScorePill.getLocalBounds().width - BODY_W);
+
+    // RED (flat edge on RIGHT, circle faces left → inward)
+    this.redScorePill.x = width - BODY_W - EDGE_PADDING;
+
+    // this.turnText.x = width / 2 - this.turnText.width / 2;
+    // this.turnText.y = 20;
   }
 
   public async show(): Promise<void> {

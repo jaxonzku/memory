@@ -15,7 +15,36 @@ export class Card extends Container {
   public flipped = false;
   public locked = false;
   public removed = false;
+  public shake() {
+    gsap.fromTo(
+      this,
+      { x: this.x - 8 },
+      { x: this.x + 8, duration: 0.05, yoyo: true, repeat: 2 }
+    );
+  }
+  public animateRemove() {
+    this.removed = true;
+    this.locked = true;
 
+    gsap
+      .timeline()
+      .to(this.scale, {
+        x: 1.5,
+        y: 1.5,
+        duration: 0.15,
+        ease: "power2.out",
+      })
+      .to(this, {
+        alpha: 0,
+        scaleX: 0,
+        scaleY: 0,
+        duration: 0.25,
+        ease: "back.in",
+        onComplete: () => {
+          this.visible = false;
+        },
+      });
+  }
   constructor(size = 80, backColor = 0x4ade80, debug = false) {
     super();
     this.debugEnabled = debug;
