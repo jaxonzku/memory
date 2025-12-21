@@ -6,8 +6,8 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1766168810736,
-                "duration": 3.714709000000312,
+                "date": 1766308332626,
+                "duration": 0.8803329998627305,
                 "success": true
             }
         },
@@ -20,8 +20,8 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1766168810737,
-                "duration": 4.1155830000002425,
+                "date": 1766307006763,
+                "duration": 0.025834000087343156,
                 "success": true
             }
         },
@@ -227,8 +227,8 @@
             },
             "transformData": {},
             "stats": {
-                "date": 1766168810741,
-                "duration": 78.9847920000002,
+                "date": 1766303283340,
+                "duration": 68.33345899730921,
                 "success": true
             }
         },
@@ -575,10 +575,130 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1766168810750,
-                "duration": 0.12662500000033106,
+                "date": 1766308332626,
+                "duration": 0.8332919999957085,
                 "success": true
             }
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/coookie_man.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308178703,
+                "duration": 1.6300419999752194,
+                "success": true
+            },
+            "hash": "K04l"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/coookie_man.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/coookie_man.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/cup_cake.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308178703,
+                "duration": 1.1677919998764992,
+                "success": true
+            },
+            "hash": "lFN2-w"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/cup_cake.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/cup_cake.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/gift_pack.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308178704,
+                "duration": 0.8508339999243617,
+                "success": true
+            },
+            "hash": "Nbad6g"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/gift_pack.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/gift_pack.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/hang_socks.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308178704,
+                "duration": 0.8110410000663251,
+                "success": true
+            },
+            "hash": "KyFtzw"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/hang_socks.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/hang_socks.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/head_phone.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308178705,
+                "duration": 0.7187079999130219,
+                "success": true
+            },
+            "hash": "dCxsnQ"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/head_phone.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/head_phone.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
         },
         "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/logo.svg": {
             "isFolder": false,
@@ -598,6 +718,222 @@
         "/Users/jacksonjames/projects/memory/public/assets/preload/logo.svg": {
             "isFolder": false,
             "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/logo.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/pop_cone.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308178704,
+                "duration": 0.6380839999765158,
+                "success": true
+            },
+            "hash": "b6cYVQ"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/pop_cone.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/pop_cone.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/shiny_ball.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308178705,
+                "duration": 0.5745830000378191,
+                "success": true
+            },
+            "hash": "V-OWhg"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/shiny_ball.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/shiny_ball.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/snow_man.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308178704,
+                "duration": 0.8810000000521541,
+                "success": true
+            },
+            "hash": "EvLewA"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/snow_man.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/snow_man.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/xmas_bell.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308178705,
+                "duration": 0.4116249999497086,
+                "success": true
+            },
+            "hash": "cE6FXg"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/xmas_bell.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/xmas_bell.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/xmas_cards.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308178705,
+                "duration": 0.2725410000421107,
+                "success": true
+            },
+            "hash": "t6XE6A"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/xmas_cards.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/xmas_cards.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/xmas_hat.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308332626,
+                "duration": 0.9659170000813901,
+                "success": true
+            },
+            "hash": "gHbyYg"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/xmas_hat.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/xmas_hat.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/xmas_home.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308332626,
+                "duration": 0.48758399998769164,
+                "success": true
+            },
+            "hash": "iYfRkA"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/xmas_home.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/xmas_home.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/xmas_papa.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308332627,
+                "duration": 0.3045830000191927,
+                "success": true
+            },
+            "hash": "MhoTdQ"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/xmas_papa.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/xmas_papa.svg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/xmas_tree.svg": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1766308332627,
+                "duration": 0.1647499999962747,
+                "success": true
+            },
+            "hash": "LawxQA"
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/preload/xmas_tree.svg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/preload{m}/xmas_tree.svg",
             "metaData": {},
             "inheritedMetaData": {
                 "m": true

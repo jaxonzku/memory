@@ -1,17 +1,16 @@
 // src/app/screens/main/Card.ts
 
-import { Container, Graphics, Text } from "pixi.js";
+import { Container, Graphics, Text, Sprite } from "pixi.js";
 import { gsap } from "gsap";
 
 export class Card extends Container {
   public id!: number;
 
   private front: Graphics;
-  private back: Graphics;
   private debugText?: Text;
   private debugEnabled = false;
-  private backColor!: number;
-
+  private backSprite!: Sprite;
+  private backBg!: Graphics;
   public flipped = false;
   public locked = false;
   public removed = false;
@@ -45,10 +44,60 @@ export class Card extends Container {
         },
       });
   }
-  constructor(size = 80, backColor = 0x4ade80, debug = false) {
+  // constructor(size = 80, imagePath: string, debug = false) {
+  //   console.log("imagepath", imagePath);
+  //   super();
+  //   this.debugEnabled = debug;
+  //   // this.backColor = backColor;
+
+  //   this.front = new Graphics()
+  //     .roundRect(-size / 2, -size / 2, size, size, 15)
+  //     .fill(0xed427c)
+  //     .stroke({
+  //       width: 8,
+  //       color: "white",
+  //     });
+  //   this.backBg = new Graphics()
+  //     .roundRect(-size / 2, -size / 2, size, size, 15)
+  //     .fill(0xffffff);
+  //   this.backBg.visible = false;
+  //   this.backSprite = Sprite.from(imagePath);
+  //   this.backSprite.visible = false;
+  //   this.backSprite.anchor.set(0.5);
+  //   this.backSprite.width = size * 0.75;
+  //   this.backSprite.height = size * 0.75;
+  //   // this.backSprite.tint = 0x333333;
+
+  //   // rounded mask
+  //   const mask = new Graphics()
+  //     .roundRect(-size / 2, -size / 2, size, size, 15)
+  //     .fill(0xffffff);
+  //   mask.position.set(0, 0);
+
+  //   // mask.visible = false;
+  //   this.addChild(this.backBg);
+  //   this.addChild(mask); // Add mask before sprite
+  //   this.addChild(this.backSprite);
+  //   this.addChild(this.front);
+  //   this.backSprite.mask = mask;
+
+  //   if (this.debugEnabled) {
+  //     this.debugText = new Text({
+  //       text: "",
+  //       style: {
+  //         fill: 0xffffff,
+  //         fontSize: 12,
+  //         align: "center",
+  //       },
+  //     });
+  //     this.debugText.anchor.set(0.5);
+  //     this.addChild(this.debugText);
+  //   }
+  // }
+  constructor(size = 80, imagePath: string, debug = false) {
+    console.log("imagepath", imagePath);
     super();
     this.debugEnabled = debug;
-    this.backColor = backColor;
 
     this.front = new Graphics()
       .roundRect(-size / 2, -size / 2, size, size, 15)
@@ -58,16 +107,21 @@ export class Card extends Container {
         color: "white",
       });
 
-    this.back = new Graphics()
+    this.backBg = new Graphics()
       .roundRect(-size / 2, -size / 2, size, size, 15)
-      .fill(backColor)
-      .stroke({
-        width: 8,
-        color: "white",
-      });
-    this.back.visible = false;
+      .fill(0xffffff);
+    this.backBg.visible = false;
 
-    this.addChild(this.front, this.back);
+    this.backSprite = Sprite.from(imagePath);
+    this.backSprite.visible = false;
+    this.backSprite.anchor.set(0.5);
+    this.backSprite.width = size * 0.75;
+    this.backSprite.height = size * 0.75;
+
+    // Simple layering - no mask needed
+    this.addChild(this.backBg);
+    this.addChild(this.backSprite);
+    this.addChild(this.front);
 
     if (this.debugEnabled) {
       this.debugText = new Text({
@@ -84,9 +138,7 @@ export class Card extends Container {
   }
   public setDebugInfo(id: number) {
     if (!this.debugEnabled || !this.debugText) return;
-    this.debugText.text = `ID: ${id}\n#${this.backColor
-      .toString(16)
-      .padStart(6, "0")}`;
+    this.debugText.text = `ID: ${id}`;
   }
 
   public reveal() {
@@ -114,8 +166,8 @@ export class Card extends Container {
       ease: "power1.in",
       onComplete: () => {
         this.front.visible = !showBack;
-        this.back.visible = showBack;
-
+        this.backBg.visible = showBack;
+        this.backSprite.visible = showBack;
         gsap.to(this.scale, {
           x: 1,
           duration: 0.25,

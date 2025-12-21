@@ -91,11 +91,207 @@
       "assets": [
         {
           "alias": [
+            "preload/coookie_man.svg",
+            "coookie_man.svg"
+          ],
+          "src": [
+            "preload/coookie_man.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/cup_cake.svg",
+            "cup_cake.svg"
+          ],
+          "src": [
+            "preload/cup_cake.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/gift_pack.svg",
+            "gift_pack.svg"
+          ],
+          "src": [
+            "preload/gift_pack.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/hang_socks.svg",
+            "hang_socks.svg"
+          ],
+          "src": [
+            "preload/hang_socks.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/head_phone.svg",
+            "head_phone.svg"
+          ],
+          "src": [
+            "preload/head_phone.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
             "preload/logo.svg",
             "logo.svg"
           ],
           "src": [
             "preload/logo.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/pop_cone.svg",
+            "pop_cone.svg"
+          ],
+          "src": [
+            "preload/pop_cone.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/shiny_ball.svg",
+            "shiny_ball.svg"
+          ],
+          "src": [
+            "preload/shiny_ball.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/snow_man.svg",
+            "snow_man.svg"
+          ],
+          "src": [
+            "preload/snow_man.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/xmas_bell.svg",
+            "xmas_bell.svg"
+          ],
+          "src": [
+            "preload/xmas_bell.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/xmas_cards.svg",
+            "xmas_cards.svg"
+          ],
+          "src": [
+            "preload/xmas_cards.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/xmas_hat.svg",
+            "xmas_hat.svg"
+          ],
+          "src": [
+            "preload/xmas_hat.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/xmas_home.svg",
+            "xmas_home.svg"
+          ],
+          "src": [
+            "preload/xmas_home.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/xmas_papa.svg",
+            "xmas_papa.svg"
+          ],
+          "src": [
+            "preload/xmas_papa.svg"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "preload/xmas_tree.svg",
+            "xmas_tree.svg"
+          ],
+          "src": [
+            "preload/xmas_tree.svg"
           ],
           "data": {
             "tags": {

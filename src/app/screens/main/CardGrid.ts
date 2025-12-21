@@ -16,27 +16,43 @@ enum Player {
   Blue,
   Red,
 }
+const IMAGE_PATHS = [
+  "assets/preload/coookie_man.svg",
+  "assets/preload/cup_cake.svg",
+  "assets/preload/gift_pack.svg",
+  "assets/preload/hang_socks.svg",
+  "assets/preload/head_phone.svg",
+  "assets/preload/pop_cone.svg",
+  "assets/preload/shiny_ball.svg",
+  "assets/preload/snow_man.svg",
+  "assets/preload/xmas_bell.svg",
+  "assets/preload/xmas_cards.svg",
+  "assets/preload/xmas_hat.svg",
+  "assets/preload/xmas_home.svg",
+  "assets/preload/xmas_papa.svg",
+  "assets/preload/xmas_tree.svg",
+];
 
-function generateColor(id: number) {
-  const hue = (id * 137.508) % 360;
-  return hslToHex(hue, 70, 60);
-}
+// function generateColor(id: number) {
+//   const hue = (id * 137.508) % 360;
+//   return hslToHex(hue, 70, 60);
+// }
 
-function hslToHex(h: number, s: number, l: number) {
-  s /= 100;
-  l /= 100;
+// function hslToHex(h: number, s: number, l: number) {
+//   s /= 100;
+//   l /= 100;
 
-  const k = (n: number) => (n + h / 30) % 12;
-  const a = s * Math.min(l, 1 - l);
-  const f = (n: number) =>
-    l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+//   const k = (n: number) => (n + h / 30) % 12;
+//   const a = s * Math.min(l, 1 - l);
+//   const f = (n: number) =>
+//     l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
 
-  return (
-    (Math.round(255 * f(0)) << 16) |
-    (Math.round(255 * f(8)) << 8) |
-    Math.round(255 * f(4))
-  );
-}
+//   return (
+//     (Math.round(255 * f(0)) << 16) |
+//     (Math.round(255 * f(8)) << 8) |
+//     Math.round(255 * f(4))
+//   );
+// }
 
 export class CardGrid extends Container {
   private onTurnEnd?: (result: TurnResult) => void;
@@ -59,9 +75,8 @@ export class CardGrid extends Container {
     const deck = [...ids, ...ids].sort(() => Math.random() - 0.5);
 
     deck.forEach((id, index) => {
-      const color = generateColor(id);
-
-      const card = new Card(100, color, true);
+      const imagePath = IMAGE_PATHS[id];
+      const card = new Card(100, imagePath, true);
       const rotationDeg = STATIC_ROTATIONS[index % STATIC_ROTATIONS.length];
       card.rotation = rotationDeg * (Math.PI / 180);
       card.id = id;

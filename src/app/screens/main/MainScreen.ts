@@ -9,7 +9,15 @@ import { engine } from "../../getEngine";
 import { PausePopup } from "../../popups/PausePopup";
 import { SettingsPopup } from "../../popups/SettingsPopup";
 import { gsap } from "gsap";
-import { Container, Text, Sprite, Texture, Graphics, Rectangle } from "pixi.js";
+import {
+  Container,
+  Text,
+  Sprite,
+  Texture,
+  Graphics,
+  Rectangle,
+  Assets,
+} from "pixi.js";
 const BLUE_BG = 0x7fb7d6; // blue player
 const RED_BG = 0xf2a07b; // red player
 
@@ -366,24 +374,22 @@ export class MainScreen extends Container {
   }
 
   public async show(): Promise<void> {
-    // await Assets.load([
-    //   "/assets/preload/coookie_man.",
-    //   "/assets/preload/cup_cake.",
-    //   "/assets/preload/gift_pack.",
-    //   "/assets/preload/hang_socks.",
-    //   "/assets/preload/head_phone.",
-    //   "/assets/preload/pop_cone.",
-    //   "/assets/preload/shiny_ball.",
-    //   "/assets/preload/snow_man.",
-    //   "/assets/preload/xmas_bell.",
-    //   "/assets/preload/xmas_cards.",
-    //   "/assets/preload/xmas_hat.",
-    //   "/assets/preload/xmas_home.",
-    //   "/assets/preload/xmas_papa.",
-    //   "/assets/preload/xmas_tree.",
-    // ]);
-
-    // CARD GRID
+    await Assets.load([
+      "/assets/preload/coookie_man.svg",
+      "/assets/preload/cup_cake.svg",
+      "/assets/preload/gift_pack.svg",
+      "/assets/preload/hang_socks.svg",
+      "/assets/preload/head_phone.svg",
+      "/assets/preload/pop_cone.svg",
+      "/assets/preload/shiny_ball.svg",
+      "/assets/preload/snow_man.svg",
+      "/assets/preload/xmas_bell.svg",
+      "/assets/preload/xmas_cards.svg",
+      "/assets/preload/xmas_hat.svg",
+      "/assets/preload/xmas_home.svg",
+      "/assets/preload/xmas_papa.svg",
+      "/assets/preload/xmas_tree.svg",
+    ]);
 
     engine().audio.bgm.play("main/sounds/bgm-main.mp3", { volume: 0.5 });
 
