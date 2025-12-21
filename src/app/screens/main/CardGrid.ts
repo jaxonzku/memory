@@ -76,7 +76,7 @@ export class CardGrid extends Container {
 
     deck.forEach((id, index) => {
       const imagePath = IMAGE_PATHS[id];
-      const card = new Card(100, imagePath, true);
+      const card = new Card(100, imagePath, false);
       const rotationDeg = STATIC_ROTATIONS[index % STATIC_ROTATIONS.length];
       card.rotation = rotationDeg * (Math.PI / 180);
       card.id = id;
@@ -122,6 +122,7 @@ export class CardGrid extends Container {
 
         card.x = startX + i * (CARD_SIZE + GAP);
         card.y = startY + row * (CARD_SIZE + GAP);
+        card.baseX = card.x; // ✅ ADD THIS
 
         cardIndex++;
       }
@@ -139,7 +140,7 @@ export class CardGrid extends Container {
 
       card.x = -SIDE_OFFSET_X;
       card.y = sideStartY + i * (CARD_SIZE + GAP);
-
+      card.baseX = card.x; // ✅ ADD THIS
       cardIndex++;
     }
 
@@ -150,7 +151,7 @@ export class CardGrid extends Container {
 
       card.x = SIDE_OFFSET_X;
       card.y = sideStartY + i * (CARD_SIZE + GAP);
-
+      card.baseX = card.x; // ✅ ADD THIS
       cardIndex++;
     }
   }

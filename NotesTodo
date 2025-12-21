@@ -1,12 +1,19 @@
 score board ✅
 turn indicator ✅
-score animations
-removing animation
+score animations ✅
+removing animation ✅
+images for cristmas ✅
 game winner
 start game button
+single player and 2 player capability
+use different color for svg background will make the image look good
 chnage blue and red color
 check color pallete
 new buttons ui
-sound for click , match 
+sound for click , match ,hover
 song for background
-images for cristmas
+
+bugs
+--------
+after opening and closing the cards are moving position a little ✅
+

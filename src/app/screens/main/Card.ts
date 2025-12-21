@@ -14,11 +14,20 @@ export class Card extends Container {
   public flipped = false;
   public locked = false;
   public removed = false;
+  public baseX = 0;
   public shake() {
     gsap.fromTo(
       this,
-      { x: this.x - 8 },
-      { x: this.x + 8, duration: 0.05, yoyo: true, repeat: 2 }
+      { x: this.baseX - 8 },
+      {
+        x: this.baseX + 8,
+        duration: 0.05,
+        yoyo: true,
+        repeat: 2,
+        onComplete: () => {
+          this.x = this.baseX;
+        },
+      }
     );
   }
   public animateRemove() {
@@ -44,56 +53,7 @@ export class Card extends Container {
         },
       });
   }
-  // constructor(size = 80, imagePath: string, debug = false) {
-  //   console.log("imagepath", imagePath);
-  //   super();
-  //   this.debugEnabled = debug;
-  //   // this.backColor = backColor;
 
-  //   this.front = new Graphics()
-  //     .roundRect(-size / 2, -size / 2, size, size, 15)
-  //     .fill(0xed427c)
-  //     .stroke({
-  //       width: 8,
-  //       color: "white",
-  //     });
-  //   this.backBg = new Graphics()
-  //     .roundRect(-size / 2, -size / 2, size, size, 15)
-  //     .fill(0xffffff);
-  //   this.backBg.visible = false;
-  //   this.backSprite = Sprite.from(imagePath);
-  //   this.backSprite.visible = false;
-  //   this.backSprite.anchor.set(0.5);
-  //   this.backSprite.width = size * 0.75;
-  //   this.backSprite.height = size * 0.75;
-  //   // this.backSprite.tint = 0x333333;
-
-  //   // rounded mask
-  //   const mask = new Graphics()
-  //     .roundRect(-size / 2, -size / 2, size, size, 15)
-  //     .fill(0xffffff);
-  //   mask.position.set(0, 0);
-
-  //   // mask.visible = false;
-  //   this.addChild(this.backBg);
-  //   this.addChild(mask); // Add mask before sprite
-  //   this.addChild(this.backSprite);
-  //   this.addChild(this.front);
-  //   this.backSprite.mask = mask;
-
-  //   if (this.debugEnabled) {
-  //     this.debugText = new Text({
-  //       text: "",
-  //       style: {
-  //         fill: 0xffffff,
-  //         fontSize: 12,
-  //         align: "center",
-  //       },
-  //     });
-  //     this.debugText.anchor.set(0.5);
-  //     this.addChild(this.debugText);
-  //   }
-  // }
   constructor(size = 80, imagePath: string, debug = false) {
     console.log("imagepath", imagePath);
     super();
@@ -109,7 +69,11 @@ export class Card extends Container {
 
     this.backBg = new Graphics()
       .roundRect(-size / 2, -size / 2, size, size, 15)
-      .fill(0xffffff);
+      .fill(0xed427c)
+      .stroke({
+        width: 8,
+        color: "white",
+      });
     this.backBg.visible = false;
 
     this.backSprite = Sprite.from(imagePath);
