@@ -1,11 +1,12 @@
 import { Container, NineSliceSprite, Texture } from "pixi.js";
+import { AppColors } from "../theme/colors";
 
 const defaultRoundedBoxOptions = {
-  color: 0xffffff,
+  color: AppColors.panelBase,
   width: 350,
   height: 600,
   shadow: true,
-  shadowColor: 0xa0a0a0,
+  shadowColor: AppColors.panelShadow,
   shadowOffset: 22,
 };
 

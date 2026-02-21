@@ -1,6 +1,7 @@
 import { setEngine } from "./app/getEngine";
 import { LoadScreen } from "./app/screens/LoadScreen";
 import { MainScreen } from "./app/screens/main/MainScreen";
+import { AppColors, selectThemeFromString } from "./app/theme/colors";
 import { userSettings } from "./app/utils/userSettings";
 import { CreationEngine } from "./engine/engine";
 
@@ -15,9 +16,14 @@ const engine = new CreationEngine();
 setEngine(engine);
 
 (async () => {
+  // Optional runtime theme switch: ?theme=neonArena
+  selectThemeFromString(
+    new URLSearchParams(window.location.search).get("theme"),
+  );
+
   // Initialize the creation engine instance
   await engine.init({
-    background: "#1E1E1E",
+    background: AppColors.appBackground,
     resizeOptions: { minWidth: 768, minHeight: 1024, letterbox: false },
   });
 

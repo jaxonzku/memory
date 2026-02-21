@@ -5,6 +5,7 @@ import { engine } from "../getEngine";
 import { Button } from "../ui/Button";
 import { Label } from "../ui/Label";
 import { RoundedBox } from "../ui/RoundedBox";
+import { AppColors } from "../theme/colors";
 
 /** Popup that shows up when gameplay is paused */
 export class PausePopup extends Container {
@@ -23,7 +24,7 @@ export class PausePopup extends Container {
     super();
 
     this.bg = new Sprite(Texture.WHITE);
-    this.bg.tint = 0x0;
+    this.bg.tint = AppColors.overlayBackdrop;
     this.bg.interactive = true;
     this.addChild(this.bg);
 
@@ -35,7 +36,7 @@ export class PausePopup extends Container {
 
     this.title = new Label({
       text: "Paused",
-      style: { fill: 0xec1561, fontSize: 50 },
+      style: { fill: AppColors.panelTitle, fontSize: 50 },
     });
     this.title.y = -80;
     this.panel.addChild(this.title);

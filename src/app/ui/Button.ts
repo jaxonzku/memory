@@ -1,6 +1,7 @@
 import { FancyButton } from "@pixi/ui";
 
 import { engine } from "../getEngine";
+import { AppColors } from "../theme/colors";
 
 import { Label } from "./Label";
 
@@ -27,7 +28,7 @@ export class Button extends FancyButton {
       text: new Label({
         text: opts.text,
         style: {
-          fill: 0x4a4a4a,
+          fill: AppColors.panelText,
           align: "center",
           fontSize: opts.fontSize,
         },

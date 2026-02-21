@@ -18,8 +18,7 @@ import {
   Rectangle,
   Assets,
 } from "pixi.js";
-const BLUE_BG = 0x7fb7d6; // blue player
-const RED_BG = 0xf2a07b; // red player
+import { AppColors } from "../../theme/colors";
 
 /** The screen that holds the app */
 export class MainScreen extends Container {
@@ -50,7 +49,7 @@ export class MainScreen extends Container {
     side: "left" | "right",
     screenWidth: number,
     flatBodyWidth: number,
-    edgePadding: number
+    edgePadding: number,
   ) {
     const bounds = pill.getLocalBounds();
     const overhang = bounds.width - flatBodyWidth;
@@ -64,7 +63,7 @@ export class MainScreen extends Container {
   private createTurnPill(
     bgColor: number,
     text: string,
-    side: "left" | "right"
+    side: "left" | "right",
   ): { container: Container; label: Text } {
     const container = new Container();
     const bg = new Graphics();
@@ -95,7 +94,7 @@ export class MainScreen extends Container {
     const label = new Text({
       text,
       style: {
-        fill: 0xffffff,
+        fill: AppColors.panelBase,
         fontSize: 22, // ⬅️ fits now
         fontWeight: "bold",
         fontFamily: "Arial Rounded MT Bold",
@@ -120,7 +119,7 @@ export class MainScreen extends Container {
   private createScorePill(
     bgColor: number,
     textColor: number,
-    side: "left" | "right"
+    side: "left" | "right",
   ): { container: Container; label: Text } {
     const container = new Container();
     const bg = new Graphics();
@@ -136,14 +135,14 @@ export class MainScreen extends Container {
       bg.arc(0, SIZE, RADIUS, Math.PI * 1.5, Math.PI * 2);
       bg.lineTo(0, SIZE);
       bg.endFill();
-      // bg.stroke({ width: 5, color: "white" });
+      // bg.stroke({ width: 5, color: AppColors.panelBase });
     } else {
       bg.beginFill(bgColor);
       bg.moveTo(SIZE, SIZE);
       bg.arc(SIZE, SIZE, RADIUS, Math.PI, Math.PI * 1.5);
       bg.lineTo(SIZE, SIZE);
       bg.endFill();
-      // bg.stroke({ width: 5, color: "white" });
+      // bg.stroke({ width: 5, color: AppColors.panelBase });
     }
 
     const label = new Text({
@@ -177,11 +176,11 @@ export class MainScreen extends Container {
   constructor() {
     super();
     this.bgBlue = new Sprite(Texture.WHITE);
-    this.bgBlue.tint = BLUE_BG;
+    this.bgBlue.tint = AppColors.playerBlueBackground;
     this.bgBlue.alpha = 1;
 
     this.bgRed = new Sprite(Texture.WHITE);
-    this.bgRed.tint = RED_BG;
+    this.bgRed.tint = AppColors.playerRedBackground;
     this.bgRed.alpha = 0;
 
     this.addChild(this.bgBlue);
@@ -198,7 +197,7 @@ export class MainScreen extends Container {
           gsap.fromTo(
             this.blueScorePill.scale,
             { x: 1, y: 1 },
-            { x: 1.15, y: 1.15, duration: 0.15, yoyo: true, repeat: 1 }
+            { x: 1.15, y: 1.15, duration: 0.15, yoyo: true, repeat: 1 },
           );
           this.blueScore++;
           this.blueScoreLabel.text = String(this.blueScore);
@@ -206,7 +205,7 @@ export class MainScreen extends Container {
           gsap.fromTo(
             this.redScorePill.scale,
             { x: 1, y: 1 },
-            { x: 1.15, y: 1.15, duration: 0.15, yoyo: true, repeat: 1 }
+            { x: 1.15, y: 1.15, duration: 0.15, yoyo: true, repeat: 1 },
           );
           this.redScore++;
           this.redScoreLabel.text = String(this.redScore);
@@ -220,7 +219,9 @@ export class MainScreen extends Container {
 
       // update turn text
       // this.turnText.text = `Turn: ${isBlueTurn ? "Blue" : "Red"}`;
-      // this.turnText.style.fill = isBlueTurn ? 0x3b82f6 : 0xef4444;
+      // this.turnText.style.fill = isBlueTurn
+      //   ? AppColors.turnBlue
+      //   : AppColors.turnRed;
       this.blueTurnPill.visible = isBlueTurn;
       this.redTurnPill.visible = !isBlueTurn;
 
@@ -229,7 +230,7 @@ export class MainScreen extends Container {
       gsap.fromTo(
         pill,
         { alpha: 0, x: pill.x - 30 },
-        { alpha: 1, x: pill.x, duration: 0.3, ease: "power2.out" }
+        { alpha: 1, x: pill.x, duration: 0.3, ease: "power2.out" },
       );
 
       // update background EVERY turn end]
@@ -243,13 +244,21 @@ export class MainScreen extends Container {
         gsap.to(this.bgRed, { alpha: 1, duration: 0.4, ease: "sine.out" });
       }
     });
-    const blueTurn = this.createTurnPill(0x3b82f6, "Blue's Turn", "left");
+    const blueTurn = this.createTurnPill(
+      AppColors.turnBlue,
+      "Blue's Turn",
+      "left",
+    );
     this.blueTurnPill = blueTurn.container;
     this.blueTurnLabel = blueTurn.label;
     this.addChild(this.blueTurnPill);
 
     // Red → TOP-RIGHT
-    const redTurn = this.createTurnPill(0xef4444, "Red's Turn", "right");
+    const redTurn = this.createTurnPill(
+      AppColors.turnRed,
+      "Red's Turn",
+      "right",
+    );
     this.redTurnPill = redTurn.container;
     this.redTurnLabel = redTurn.label;
     this.addChild(this.redTurnPill);
@@ -258,19 +267,27 @@ export class MainScreen extends Container {
     this.blueTurnPill.visible = true;
     this.redTurnPill.visible = false;
 
-    const blue = this.createScorePill(0x3b82f6, 0xffffff, "left");
+    const blue = this.createScorePill(
+      AppColors.turnBlue,
+      AppColors.panelBase,
+      "left",
+    );
     this.blueScorePill = blue.container;
     this.blueScoreLabel = blue.label;
     this.addChild(this.blueScorePill);
 
-    const red = this.createScorePill(0xef4444, 0xffffff, "right");
+    const red = this.createScorePill(
+      AppColors.turnRed,
+      AppColors.panelBase,
+      "right",
+    );
     this.redScorePill = red.container;
     this.redScoreLabel = red.label;
     this.addChild(this.redScorePill);
 
     // this.turnText = new Text({
     //   text: "Turn: Blue",
-    //   style: { fill: 0x3b82f6, fontSize: 26, fontWeight: "bold" },
+    //   style: { fill: AppColors.turnBlue, fontSize: 26, fontWeight: "bold" },
     // });
     // this.addChild(this.turnText);
 
@@ -297,7 +314,7 @@ export class MainScreen extends Container {
       animations: buttonAnimations,
     });
     this.pauseButton.onPress.connect(() =>
-      engine().navigation.presentPopup(PausePopup)
+      engine().navigation.presentPopup(PausePopup),
     );
     this.addChild(this.pauseButton);
 
@@ -308,7 +325,7 @@ export class MainScreen extends Container {
       animations: buttonAnimations,
     });
     this.settingsButton.onPress.connect(() =>
-      engine().navigation.presentPopup(SettingsPopup)
+      engine().navigation.presentPopup(SettingsPopup),
     );
     this.addChild(this.settingsButton);
   }
@@ -316,6 +333,7 @@ export class MainScreen extends Container {
   public prepare() {}
 
   public update(_time: Ticker) {
+    void _time;
     if (this.paused) return;
   }
 
@@ -401,7 +419,7 @@ export class MainScreen extends Container {
       finalPromise = animate(
         el,
         { alpha: 1 },
-        { duration: 0.3, delay: 0.75, ease: "backOut" }
+        { duration: 0.3, delay: 0.75, ease: "backOut" },
       );
     }
 

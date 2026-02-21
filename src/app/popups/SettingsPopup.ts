@@ -7,6 +7,7 @@ import { engine } from "../getEngine";
 import { Button } from "../ui/Button";
 import { Label } from "../ui/Label";
 import { RoundedBox } from "../ui/RoundedBox";
+import { AppColors } from "../theme/colors";
 import { VolumeSlider } from "../ui/VolumeSlider";
 import { userSettings } from "../utils/userSettings";
 
@@ -37,7 +38,7 @@ export class SettingsPopup extends Container {
     super();
 
     this.bg = new Sprite(Texture.WHITE);
-    this.bg.tint = 0x0;
+    this.bg.tint = AppColors.overlayBackdrop;
     this.bg.interactive = true;
     this.addChild(this.bg);
 
@@ -50,7 +51,7 @@ export class SettingsPopup extends Container {
     this.title = new Label({
       text: "Settings",
       style: {
-        fill: 0xec1561,
+        fill: AppColors.panelTitle,
         fontSize: 50,
       },
     });
@@ -65,7 +66,7 @@ export class SettingsPopup extends Container {
     this.versionLabel = new Label({
       text: `Version ${APP_VERSION}`,
       style: {
-        fill: 0xffffff,
+        fill: AppColors.panelBase,
         fontSize: 12,
       },
     });

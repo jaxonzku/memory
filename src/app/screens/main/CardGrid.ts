@@ -65,7 +65,7 @@ export class CardGrid extends Container {
     pairs = 18,
     cols = 6,
     gap = 400,
-    onTurnEnd?: (result: TurnResult) => void
+    onTurnEnd?: (result: TurnResult) => void,
   ) {
     super();
     this.onTurnEnd = onTurnEnd;

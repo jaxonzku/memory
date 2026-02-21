@@ -2,6 +2,7 @@
 
 import { Container, Graphics, Text, Sprite } from "pixi.js";
 import { gsap } from "gsap";
+import { AppColors } from "../../theme/colors";
 
 export class Card extends Container {
   public id!: number;
@@ -27,7 +28,7 @@ export class Card extends Container {
         onComplete: () => {
           this.x = this.baseX;
         },
-      }
+      },
     );
   }
   public animateRemove() {
@@ -61,18 +62,18 @@ export class Card extends Container {
 
     this.front = new Graphics()
       .roundRect(-size / 2, -size / 2, size, size, 15)
-      .fill(0xed427c)
+      .fill(AppColors.cardBase)
       .stroke({
         width: 8,
-        color: "white",
+        color: AppColors.panelBase,
       });
 
     this.backBg = new Graphics()
       .roundRect(-size / 2, -size / 2, size, size, 15)
-      .fill(0xed427c)
+      .fill(AppColors.cardBase)
       .stroke({
         width: 8,
-        color: "white",
+        color: AppColors.panelBase,
       });
     this.backBg.visible = false;
 
@@ -91,7 +92,7 @@ export class Card extends Container {
       this.debugText = new Text({
         text: "",
         style: {
-          fill: 0xffffff,
+          fill: AppColors.panelBase,
           fontSize: 12,
           align: "center",
         },
