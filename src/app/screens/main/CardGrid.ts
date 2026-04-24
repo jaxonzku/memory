@@ -2,6 +2,7 @@
 
 import { Container } from "pixi.js";
 import { Card } from "./Card";
+import { engine } from "../../getEngine";
 
 const STATIC_ROTATIONS = [
   -8, -4, 3, 7, -6, 2, 6, -3, 4, -7, 1, 5, -5, 8, -2, 3, 6, -4, 7, -6,
@@ -33,26 +34,13 @@ const IMAGE_PATHS = [
   "assets/preload/xmas_tree.svg",
 ];
 
-// function generateColor(id: number) {
-//   const hue = (id * 137.508) % 360;
-//   return hslToHex(hue, 70, 60);
-// }
-
-// function hslToHex(h: number, s: number, l: number) {
-//   s /= 100;
-//   l /= 100;
-
-//   const k = (n: number) => (n + h / 30) % 12;
-//   const a = s * Math.min(l, 1 - l);
-//   const f = (n: number) =>
-//     l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-
-//   return (
-//     (Math.round(255 * f(0)) << 16) |
-//     (Math.round(255 * f(8)) << 8) |
-//     Math.round(255 * f(4))
-//   );
-// }
+function shuffle<T>(items: T[]) {
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
+  }
+  return items;
+}
 
 export class CardGrid extends Container {
   private onTurnEnd?: (result: TurnResult) => void;
@@ -63,16 +51,18 @@ export class CardGrid extends Container {
 
   constructor(
     pairs = 18,
-    cols = 6,
-    gap = 400,
+    _cols = 6,
+    _gap = 400,
     onTurnEnd?: (result: TurnResult) => void,
   ) {
     super();
+    void _cols;
+    void _gap;
     this.onTurnEnd = onTurnEnd;
 
     // create shuffled deck
     const ids = Array.from({ length: pairs }, (_, i) => i);
-    const deck = [...ids, ...ids].sort(() => Math.random() - 0.5);
+    const deck = shuffle([...ids, ...ids]);
 
     deck.forEach((id, index) => {
       const imagePath = IMAGE_PATHS[id];
@@ -81,11 +71,6 @@ export class CardGrid extends Container {
       card.rotation = rotationDeg * (Math.PI / 180);
       card.id = id;
       card.setDebugInfo(id);
-      const row = Math.floor(index / cols);
-      const col = index % cols;
-
-      card.x = col * gap;
-      card.y = row * gap;
       card.eventMode = "static";
       card.cursor = "pointer";
 
@@ -160,6 +145,7 @@ export class CardGrid extends Container {
     if (this.busy) return;
     if (card.flipped || card.removed) return;
 
+    engine().audio.sfx.play("main/sounds/card-flip.mp3");
     card.reveal();
     this.selected.push(card);
 
@@ -172,20 +158,15 @@ export class CardGrid extends Container {
   private checkMatch() {
     const [a, b] = this.selected;
     const player = this.currentPlayer === Player.Blue ? "blue" : "red";
-    console.log("CHECK MATCH");
-    console.log("Current player:", player);
-    console.log("Card A id:", a.id);
-    console.log("Card B id:", b.id);
 
     if (a.id === b.id) {
-      console.log("MATCH ✅");
-
+      engine().audio.sfx.play("main/sounds/score.mp3");
       a.animateRemove();
       b.animateRemove();
       this.onTurnEnd?.({ player, matched: true });
       // same player continues
     } else {
-      console.log("NO MATCH ❌");
+      engine().audio.sfx.play("main/sounds/wrong.mp3");
       a.shake();
       b.shake();
 

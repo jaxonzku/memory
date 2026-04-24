@@ -6,6 +6,7 @@ import { Button } from "../ui/Button";
 import { Label } from "../ui/Label";
 import { RoundedBox } from "../ui/RoundedBox";
 import { AppColors } from "../theme/colors";
+import { StartScreen } from "../screens/StartScreen";
 
 /** Popup that shows up when gameplay is paused */
 export class PausePopup extends Container {
@@ -17,8 +18,9 @@ export class PausePopup extends Container {
   private title: Label;
   /** Button that closes the popup */
   private doneButton: Button;
-  /** The panel background */
   private panelBase: RoundedBox;
+  /** Button that quits the game */
+  private quitButton: Button;
 
   constructor() {
     super();
@@ -31,20 +33,28 @@ export class PausePopup extends Container {
     this.panel = new Container();
     this.addChild(this.panel);
 
-    this.panelBase = new RoundedBox({ height: 300 });
+    this.panelBase = new RoundedBox({ height: 380 });
     this.panel.addChild(this.panelBase);
 
     this.title = new Label({
       text: "Paused",
       style: { fill: AppColors.panelTitle, fontSize: 50 },
     });
-    this.title.y = -80;
+    this.title.y = -100;
     this.panel.addChild(this.title);
 
     this.doneButton = new Button({ text: "Resume" });
-    this.doneButton.y = 70;
+    this.doneButton.y = 10;
     this.doneButton.onPress.connect(() => engine().navigation.dismissPopup());
     this.panel.addChild(this.doneButton);
+
+    this.quitButton = new Button({ text: "Quit" });
+    this.quitButton.y = 110;
+    this.quitButton.onPress.connect(async () => {
+      await engine().navigation.dismissPopup();
+      void engine().navigation.showScreen(StartScreen);
+    });
+    this.panel.addChild(this.quitButton);
   }
 
   /** Resize the popup, fired whenever window size changes */

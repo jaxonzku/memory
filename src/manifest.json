@@ -23,12 +23,87 @@
         },
         {
           "alias": [
+            "main/sounds/bgm-main-1.mp3",
+            "bgm-main-1.mp3"
+          ],
+          "src": [
+            "main/sounds/bgm-main-1.ogg",
+            "main/sounds/bgm-main-1.mp3"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
             "main/sounds/bgm-main.mp3",
             "bgm-main.mp3"
           ],
           "src": [
             "main/sounds/bgm-main.ogg",
             "main/sounds/bgm-main.mp3"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "main/sounds/card-flip.mp3",
+            "card-flip.mp3"
+          ],
+          "src": [
+            "main/sounds/card-flip.ogg",
+            "main/sounds/card-flip.mp3"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "main/sounds/game -over.mp3",
+            "game -over.mp3"
+          ],
+          "src": [
+            "main/sounds/game -over.ogg",
+            "main/sounds/game -over.mp3"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "main/sounds/hover-card.mp3",
+            "hover-card.mp3"
+          ],
+          "src": [
+            "main/sounds/hover-card.ogg",
+            "main/sounds/hover-card.mp3"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "main/sounds/score.mp3",
+            "score.mp3"
+          ],
+          "src": [
+            "main/sounds/score.ogg",
+            "main/sounds/score.mp3"
           ],
           "data": {
             "tags": {
@@ -59,6 +134,21 @@
           "src": [
             "main/sounds/sfx-press.ogg",
             "main/sounds/sfx-press.mp3"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "main/sounds/wrong.mp3",
+            "wrong.mp3"
+          ],
+          "src": [
+            "main/sounds/wrong.ogg",
+            "main/sounds/wrong.mp3"
           ],
           "data": {
             "tags": {

@@ -6,6 +6,7 @@ import type { AnimationPlaybackControls } from "motion/react";
 import type { Ticker } from "pixi.js";
 import { CardGrid } from "./CardGrid";
 import { engine } from "../../getEngine";
+import { GameOverPopup } from "../../popups/GameOverPopup";
 import { PausePopup } from "../../popups/PausePopup";
 import { SettingsPopup } from "../../popups/SettingsPopup";
 import { gsap } from "gsap";
@@ -23,14 +24,12 @@ import { AppColors } from "../../theme/colors";
 /** The screen that holds the app */
 export class MainScreen extends Container {
   public static assetBundles = ["main"];
-  private bg!: Sprite;
+  private static readonly TOTAL_PAIRS = 14;
   public mainContainer: Container;
   private pauseButton: FancyButton;
   private settingsButton: FancyButton;
   private blueScore = 0;
   private redScore = 0;
-  private blueScoreText!: Text;
-  private redScoreText!: Text;
   // private turnText!: Text;
   private paused = false;
   private bgBlue!: Sprite;
@@ -39,27 +38,10 @@ export class MainScreen extends Container {
   private redScorePill!: Container;
   private blueScoreLabel!: Text;
   private redScoreLabel!: Text;
+  private gameOver = false;
   private blueTurnPill!: Container;
   private redTurnPill!: Container;
-  private blueTurnLabel!: Text;
-  private redTurnLabel!: Text;
 
-  private alignPillX(
-    pill: Container,
-    side: "left" | "right",
-    screenWidth: number,
-    flatBodyWidth: number,
-    edgePadding: number,
-  ) {
-    const bounds = pill.getLocalBounds();
-    const overhang = bounds.width - flatBodyWidth;
-
-    if (side === "left") {
-      pill.x = edgePadding - overhang;
-    } else {
-      pill.x = screenWidth - flatBodyWidth - edgePadding;
-    }
-  }
   private createTurnPill(
     bgColor: number,
     text: string,
@@ -94,7 +76,7 @@ export class MainScreen extends Container {
     const label = new Text({
       text,
       style: {
-        fill: AppColors.panelBase,
+        fill: 0xffffff,
         fontSize: 22, // ⬅️ fits now
         fontWeight: "bold",
         fontFamily: "Arial Rounded MT Bold",
@@ -190,67 +172,79 @@ export class MainScreen extends Container {
     this.addChild(this.mainContainer);
 
     // CARD GRID
-    const grid = new CardGrid(14, 4, 100, ({ player, matched }) => {
-      // update score
-      if (matched) {
-        if (player === "blue") {
-          gsap.fromTo(
-            this.blueScorePill.scale,
-            { x: 1, y: 1 },
-            { x: 1.15, y: 1.15, duration: 0.15, yoyo: true, repeat: 1 },
-          );
-          this.blueScore++;
-          this.blueScoreLabel.text = String(this.blueScore);
-        } else {
-          gsap.fromTo(
-            this.redScorePill.scale,
-            { x: 1, y: 1 },
-            { x: 1.15, y: 1.15, duration: 0.15, yoyo: true, repeat: 1 },
-          );
-          this.redScore++;
-          this.redScoreLabel.text = String(this.redScore);
+    const grid = new CardGrid(
+      MainScreen.TOTAL_PAIRS,
+      4,
+      100,
+      ({ player, matched }) => {
+        if (this.gameOver) return;
+
+        // update score
+        if (matched) {
+          if (player === "blue") {
+            gsap.fromTo(
+              this.blueScorePill.scale,
+              { x: 1, y: 1 },
+              { x: 1.15, y: 1.15, duration: 0.15, yoyo: true, repeat: 1 },
+            );
+            this.blueScore++;
+            this.blueScoreLabel.text = String(this.blueScore);
+          } else {
+            gsap.fromTo(
+              this.redScorePill.scale,
+              { x: 1, y: 1 },
+              { x: 1.15, y: 1.15, duration: 0.15, yoyo: true, repeat: 1 },
+            );
+            this.redScore++;
+            this.redScoreLabel.text = String(this.redScore);
+          }
         }
-      }
 
-      // determine current turn AFTER move
-      const isBlueTurn = matched
-        ? player === "blue" // same player continues
-        : player !== "blue"; // switch player on miss
+        // Game over when all pairs are found.
+        if (this.blueScore + this.redScore >= MainScreen.TOTAL_PAIRS) {
+          this.endGame();
+          return;
+        }
 
-      // update turn text
-      // this.turnText.text = `Turn: ${isBlueTurn ? "Blue" : "Red"}`;
-      // this.turnText.style.fill = isBlueTurn
-      //   ? AppColors.turnBlue
-      //   : AppColors.turnRed;
-      this.blueTurnPill.visible = isBlueTurn;
-      this.redTurnPill.visible = !isBlueTurn;
+        // determine current turn AFTER move
+        const isBlueTurn = matched
+          ? player === "blue" // same player continues
+          : player !== "blue"; // switch player on miss
 
-      const pill = isBlueTurn ? this.blueTurnPill : this.redTurnPill;
+        // update turn text
+        // this.turnText.text = `Turn: ${isBlueTurn ? "Blue" : "Red"}`;
+        // this.turnText.style.fill = isBlueTurn
+        //   ? AppColors.turnBlue
+        //   : AppColors.turnRed;
+        this.blueTurnPill.visible = isBlueTurn;
+        this.redTurnPill.visible = !isBlueTurn;
 
-      gsap.fromTo(
-        pill,
-        { alpha: 0, x: pill.x - 30 },
-        { alpha: 1, x: pill.x, duration: 0.3, ease: "power2.out" },
-      );
+        const pill = isBlueTurn ? this.blueTurnPill : this.redTurnPill;
 
-      // update background EVERY turn end]
-      gsap.killTweensOf([this.bgBlue, this.bgRed]);
+        gsap.fromTo(
+          pill,
+          { alpha: 0, x: pill.x - 30 },
+          { alpha: 1, x: pill.x, duration: 0.3, ease: "power2.out" },
+        );
 
-      if (isBlueTurn) {
-        gsap.to(this.bgBlue, { alpha: 1, duration: 0.4, ease: "sine.out" });
-        gsap.to(this.bgRed, { alpha: 0, duration: 0.4, ease: "sine.out" });
-      } else {
-        gsap.to(this.bgBlue, { alpha: 0, duration: 0.4, ease: "sine.out" });
-        gsap.to(this.bgRed, { alpha: 1, duration: 0.4, ease: "sine.out" });
-      }
-    });
+        // update background EVERY turn end]
+        gsap.killTweensOf([this.bgBlue, this.bgRed]);
+
+        if (isBlueTurn) {
+          gsap.to(this.bgBlue, { alpha: 1, duration: 0.4, ease: "sine.out" });
+          gsap.to(this.bgRed, { alpha: 0, duration: 0.4, ease: "sine.out" });
+        } else {
+          gsap.to(this.bgBlue, { alpha: 0, duration: 0.4, ease: "sine.out" });
+          gsap.to(this.bgRed, { alpha: 1, duration: 0.4, ease: "sine.out" });
+        }
+      },
+    );
     const blueTurn = this.createTurnPill(
       AppColors.turnBlue,
       "Blue's Turn",
       "left",
     );
     this.blueTurnPill = blueTurn.container;
-    this.blueTurnLabel = blueTurn.label;
     this.addChild(this.blueTurnPill);
 
     // Red → TOP-RIGHT
@@ -260,27 +254,18 @@ export class MainScreen extends Container {
       "right",
     );
     this.redTurnPill = redTurn.container;
-    this.redTurnLabel = redTurn.label;
     this.addChild(this.redTurnPill);
 
     // Blue starts
     this.blueTurnPill.visible = true;
     this.redTurnPill.visible = false;
 
-    const blue = this.createScorePill(
-      AppColors.turnBlue,
-      AppColors.panelBase,
-      "left",
-    );
+    const blue = this.createScorePill(AppColors.turnBlue, 0xffffff, "left");
     this.blueScorePill = blue.container;
     this.blueScoreLabel = blue.label;
     this.addChild(this.blueScorePill);
 
-    const red = this.createScorePill(
-      AppColors.turnRed,
-      AppColors.panelBase,
-      "right",
-    );
+    const red = this.createScorePill(AppColors.turnRed, 0xffffff, "right");
     this.redScorePill = red.container;
     this.redScoreLabel = red.label;
     this.addChild(this.redScorePill);
@@ -330,6 +315,25 @@ export class MainScreen extends Container {
     this.addChild(this.settingsButton);
   }
 
+  private endGame() {
+    this.gameOver = true;
+    this.mainContainer.interactiveChildren = false;
+
+    const winner =
+      this.blueScore === this.redScore
+        ? "Tie"
+        : this.blueScore > this.redScore
+          ? "Blue"
+          : "Red";
+
+    GameOverPopup.setResult({
+      winner,
+      blueScore: this.blueScore,
+      redScore: this.redScore,
+    });
+    void engine().navigation.presentPopup(GameOverPopup);
+  }
+
   public prepare() {}
 
   public update(_time: Ticker) {
@@ -340,11 +344,18 @@ export class MainScreen extends Container {
   public async pause() {
     this.mainContainer.interactiveChildren = false;
     this.paused = true;
+    if (typeof PokiSDK !== "undefined") {
+      PokiSDK.gameplayStop();
+    }
   }
 
   public async resume() {
+    if (this.gameOver) return;
     this.mainContainer.interactiveChildren = true;
     this.paused = false;
+    if (typeof PokiSDK !== "undefined") {
+      PokiSDK.gameplayStart();
+    }
   }
 
   public reset() {}
@@ -359,39 +370,49 @@ export class MainScreen extends Container {
     this.bgRed.width = width;
     this.bgRed.height = height;
 
-    const BOTTOM_PADDING = 30;
+    const BASE_PILL_SIZE = 340;
+    const hudScale = Math.min(1, width / BASE_PILL_SIZE);
+    const hudSize = BASE_PILL_SIZE * hudScale;
+
+    this.blueTurnPill.scale.set(hudScale);
+    this.redTurnPill.scale.set(hudScale);
+    this.blueScorePill.scale.set(hudScale);
+    this.redScorePill.scale.set(hudScale);
+
+    const BOTTOM_PADDING = Math.max(16, height * 0.02);
     const BUTTON_GAP = 60;
 
     // PAUSE button → bottom center (left)
     this.pauseButton.x = width / 2 - BUTTON_GAP;
-    this.pauseButton.y = height - BOTTOM_PADDING;
+    this.pauseButton.y =
+      height - BOTTOM_PADDING - this.pauseButton.height * 0.5;
 
     // SETTINGS button → bottom center (right)
     this.settingsButton.x = width / 2 + BUTTON_GAP;
-    this.settingsButton.y = height - BOTTOM_PADDING;
-    const RADIUS_TURN = 170;
-    const SIZE_TURN = RADIUS_TURN * 2;
+    this.settingsButton.y =
+      height - BOTTOM_PADDING - this.settingsButton.height * 0.5;
 
     // TOP-left
     this.blueTurnPill.x = 0;
     this.blueTurnPill.y = 0;
 
     // TOP-right
-    this.redTurnPill.x = width - SIZE_TURN;
+    this.redTurnPill.x = width - hudSize;
     this.redTurnPill.y = 0;
 
-    const RADIUS = 170;
-    const SIZE = RADIUS * 2;
     // BLUE – bottom-left
     this.blueScorePill.x = 0;
-    this.blueScorePill.y = height - SIZE;
+    this.blueScorePill.y = height - hudSize;
 
     // RED – bottom-right
-    this.redScorePill.x = width - SIZE;
-    this.redScorePill.y = height - SIZE;
+    this.redScorePill.x = width - hudSize;
+    this.redScorePill.y = height - hudSize;
   }
 
   public async show(): Promise<void> {
+    if (typeof PokiSDK !== "undefined") {
+      PokiSDK.gameplayStart();
+    }
     await Assets.load([
       "/assets/preload/coookie_man.svg",
       "/assets/preload/cup_cake.svg",

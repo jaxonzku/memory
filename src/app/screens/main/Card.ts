@@ -3,6 +3,7 @@
 import { Container, Graphics, Text, Sprite } from "pixi.js";
 import { gsap } from "gsap";
 import { AppColors } from "../../theme/colors";
+import { engine } from "../../getEngine";
 
 export class Card extends Container {
   public id!: number;
@@ -12,6 +13,7 @@ export class Card extends Container {
   private debugEnabled = false;
   private backSprite!: Sprite;
   private backBg!: Graphics;
+  private hoverOverlay: Graphics;
   public flipped = false;
   public locked = false;
   public removed = false;
@@ -56,7 +58,6 @@ export class Card extends Container {
   }
 
   constructor(size = 80, imagePath: string, debug = false) {
-    console.log("imagepath", imagePath);
     super();
     this.debugEnabled = debug;
 
@@ -65,15 +66,15 @@ export class Card extends Container {
       .fill(AppColors.cardBase)
       .stroke({
         width: 8,
-        color: AppColors.panelBase,
+        color: AppColors.cardBorder ?? AppColors.panelBase,
       });
 
     this.backBg = new Graphics()
       .roundRect(-size / 2, -size / 2, size, size, 15)
-      .fill(AppColors.cardBase)
+      .fill(AppColors.cardInner ?? AppColors.panelBase)
       .stroke({
         width: 8,
-        color: AppColors.panelBase,
+        color: AppColors.cardFlippedBorder ?? AppColors.cardBase,
       });
     this.backBg.visible = false;
 
@@ -84,9 +85,18 @@ export class Card extends Container {
     this.backSprite.height = size * 0.75;
 
     // Simple layering - no mask needed
+    this.hoverOverlay = new Graphics()
+      .roundRect(-size / 2, -size / 2, size, size, 15)
+      .fill(0xffffff);
+    this.hoverOverlay.alpha = 0;
+
     this.addChild(this.backBg);
     this.addChild(this.backSprite);
     this.addChild(this.front);
+    this.addChild(this.hoverOverlay);
+
+    this.on("pointerover", this.onHover, this);
+    this.on("pointerout", this.onHoverOut, this);
 
     if (this.debugEnabled) {
       this.debugText = new Text({
@@ -109,6 +119,7 @@ export class Card extends Container {
   public reveal() {
     if (this.locked || this.removed || this.flipped) return;
     this.flipped = true;
+    gsap.to(this.hoverOverlay, { alpha: 0, duration: 0.1 });
     this.animateFlip(true);
   }
 
@@ -135,10 +146,40 @@ export class Card extends Container {
         this.backSprite.visible = showBack;
         gsap.to(this.scale, {
           x: 1,
+          y: 1,
           duration: 0.25,
           ease: "power1.out",
         });
       },
+    });
+  }
+
+  private onHover() {
+    if (this.locked || this.removed || this.flipped) return;
+    engine().audio.sfx.play("main/sounds/hover-card.mp3");
+    gsap.to(this.scale, {
+      x: 1.05,
+      y: 1.05,
+      duration: 0.1,
+      ease: "power1.out",
+    });
+    gsap.to(this.hoverOverlay, {
+      alpha: 0.2,
+      duration: 0.1,
+    });
+  }
+
+  private onHoverOut() {
+    if (this.locked || this.removed || this.flipped) return;
+    gsap.to(this.scale, {
+      x: 1,
+      y: 1,
+      duration: 0.1,
+      ease: "power1.in",
+    });
+    gsap.to(this.hoverOverlay, {
+      alpha: 0,
+      duration: 0.1,
     });
   }
 }

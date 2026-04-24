@@ -6,8 +6,8 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1771441798418,
-                "duration": 0.4626670000143349,
+                "date": 1777030496526,
+                "duration": 0.3753329999744892,
                 "success": true
             }
         },
@@ -20,8 +20,8 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1766307006763,
-                "duration": 0.025834000087343156,
+                "date": 1777030496526,
+                "duration": 0.32400000002235174,
                 "success": true
             }
         },
@@ -58,10 +58,61 @@
             },
             "transformData": {},
             "stats": {
-                "date": 1766168810739,
-                "duration": 2.0624589999997625,
+                "date": 1777030496526,
+                "duration": 0.30787499994039536,
                 "success": true
             }
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/bgm-main-1.mp3": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1777030489756,
+                "duration": 292.79558299994096,
+                "success": true
+            },
+            "hash": "IXGL8w"
+        },
+        ".assetpack/audio/main{m}/sounds/bgm-main-1.mp3": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/bgm-main-1.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/main/sounds/bgm-main-1.mp3": {
+            "isFolder": false,
+            "transformParent": ".assetpack/audio/main{m}/sounds/bgm-main-1.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        ".assetpack/audio/main{m}/sounds/bgm-main-1.ogg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/bgm-main-1.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/main/sounds/bgm-main-1.ogg": {
+            "isFolder": false,
+            "transformParent": ".assetpack/audio/main{m}/sounds/bgm-main-1.ogg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
         },
         "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/bgm-main.mp3": {
             "isFolder": false,
@@ -72,11 +123,11 @@
             },
             "transformData": {},
             "stats": {
-                "date": 1766168810739,
-                "duration": 603.928292,
+                "date": 1777030496526,
+                "duration": 327.18258300004527,
                 "success": true
             },
-            "hash": "IXGL8w"
+            "hash": "2sRAzA"
         },
         ".assetpack/audio/main{m}/sounds/bgm-main.mp3": {
             "isFolder": false,
@@ -108,6 +159,210 @@
         "/Users/jacksonjames/projects/memory/public/assets/main/sounds/bgm-main.ogg": {
             "isFolder": false,
             "transformParent": ".assetpack/audio/main{m}/sounds/bgm-main.ogg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/card-flip.mp3": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1777028932546,
+                "duration": 20.22491700015962,
+                "success": true
+            },
+            "hash": "fMAitQ"
+        },
+        ".assetpack/audio/main{m}/sounds/card-flip.mp3": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/card-flip.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/main/sounds/card-flip.mp3": {
+            "isFolder": false,
+            "transformParent": ".assetpack/audio/main{m}/sounds/card-flip.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        ".assetpack/audio/main{m}/sounds/card-flip.ogg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/card-flip.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/main/sounds/card-flip.ogg": {
+            "isFolder": false,
+            "transformParent": ".assetpack/audio/main{m}/sounds/card-flip.ogg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/game -over.mp3": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1777029742746,
+                "duration": 27.95170900039375,
+                "success": true
+            },
+            "hash": "TG-hBQ"
+        },
+        ".assetpack/audio/main{m}/sounds/game -over.mp3": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/game -over.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/main/sounds/game -over.mp3": {
+            "isFolder": false,
+            "transformParent": ".assetpack/audio/main{m}/sounds/game -over.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        ".assetpack/audio/main{m}/sounds/game -over.ogg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/game -over.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/main/sounds/game -over.ogg": {
+            "isFolder": false,
+            "transformParent": ".assetpack/audio/main{m}/sounds/game -over.ogg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/hover-card.mp3": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1777029182111,
+                "duration": 19.97275000018999,
+                "success": true
+            },
+            "hash": "-RXVIA"
+        },
+        ".assetpack/audio/main{m}/sounds/hover-card.mp3": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/hover-card.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/main/sounds/hover-card.mp3": {
+            "isFolder": false,
+            "transformParent": ".assetpack/audio/main{m}/sounds/hover-card.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        ".assetpack/audio/main{m}/sounds/hover-card.ogg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/hover-card.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/main/sounds/hover-card.ogg": {
+            "isFolder": false,
+            "transformParent": ".assetpack/audio/main{m}/sounds/hover-card.ogg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/score.mp3": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1777029372078,
+                "duration": 24.50137499999255,
+                "success": true
+            },
+            "hash": "tQKniQ"
+        },
+        ".assetpack/audio/main{m}/sounds/score.mp3": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/score.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/main/sounds/score.mp3": {
+            "isFolder": false,
+            "transformParent": ".assetpack/audio/main{m}/sounds/score.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        ".assetpack/audio/main{m}/sounds/score.ogg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/score.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/main/sounds/score.ogg": {
+            "isFolder": false,
+            "transformParent": ".assetpack/audio/main{m}/sounds/score.ogg",
             "metaData": {},
             "inheritedMetaData": {
                 "m": true
@@ -210,6 +465,57 @@
         "/Users/jacksonjames/projects/memory/public/assets/main/sounds/sfx-press.ogg": {
             "isFolder": false,
             "transformParent": ".assetpack/audio/main{m}/sounds/sfx-press.ogg",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/wrong.mp3": {
+            "isFolder": false,
+            "parent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {},
+            "stats": {
+                "date": 1777029471776,
+                "duration": 19.657083000056446,
+                "success": true
+            },
+            "hash": "GP6l9g"
+        },
+        ".assetpack/audio/main{m}/sounds/wrong.mp3": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/wrong.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/main/sounds/wrong.mp3": {
+            "isFolder": false,
+            "transformParent": ".assetpack/audio/main{m}/sounds/wrong.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        ".assetpack/audio/main{m}/sounds/wrong.ogg": {
+            "isFolder": false,
+            "transformParent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/sounds/wrong.mp3",
+            "metaData": {},
+            "inheritedMetaData": {
+                "m": true
+            },
+            "transformData": {}
+        },
+        "/Users/jacksonjames/projects/memory/public/assets/main/sounds/wrong.ogg": {
+            "isFolder": false,
+            "transformParent": ".assetpack/audio/main{m}/sounds/wrong.ogg",
             "metaData": {},
             "inheritedMetaData": {
                 "m": true

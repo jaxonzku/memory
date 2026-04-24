@@ -1,17 +1,26 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/style.css" />
     <title>PixiJS - Template</title>
-</head>
+    <script src="https://game-cdn.poki.com/scripts/v2/poki-sdk.js"></script>
+    <script>
+      // Initialize IMMEDIATELY so the Poki Inspector never times out waiting for Vite
+      PokiSDK.init().then(() => {
+          console.log("Poki SDK ready");
+      }).catch(() => {
+          console.log("Poki SDK failed to init");
+      });
+    </script>
+  </head>
 
-<body>
+  <body>
     <div id="app">
-        <div id="pixi-container"></div>
+      <div id="pixi-container"></div>
     </div>
     <script type="module" src="/src/main.ts"></script>
-</body>
+  </body>
 </html>

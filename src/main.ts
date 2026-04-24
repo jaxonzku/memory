@@ -1,6 +1,6 @@
 import { setEngine } from "./app/getEngine";
 import { LoadScreen } from "./app/screens/LoadScreen";
-import { MainScreen } from "./app/screens/main/MainScreen";
+import { StartScreen } from "./app/screens/StartScreen";
 import { AppColors, selectThemeFromString } from "./app/theme/colors";
 import { userSettings } from "./app/utils/userSettings";
 import { CreationEngine } from "./engine/engine";
@@ -32,6 +32,12 @@ setEngine(engine);
 
   // Show the load screen
   await engine.navigation.showScreen(LoadScreen);
-  // Show the main screen once the load screen is dismissed
-  await engine.navigation.showScreen(MainScreen);
+
+  // Show the start screen once loading is complete
+  await engine.navigation.showScreen(StartScreen);
+
+  // Signal that loading is finished
+  if (typeof PokiSDK !== "undefined") {
+    PokiSDK.gameLoadingFinished();
+  }
 })();
