@@ -41,6 +41,10 @@ export class MainScreen extends Container {
   private gameOver = false;
   private blueTurnPill!: Container;
   private redTurnPill!: Container;
+  private blueFreeFlip: FancyButton;
+  private redFreeFlip: FancyButton;
+  private blueFlipUsed = false;
+  private redFlipUsed = false;
 
   private createTurnPill(
     bgColor: number,
@@ -298,6 +302,8 @@ export class MainScreen extends Container {
       anchor: 0.5,
       animations: buttonAnimations,
     });
+    this.pauseButton.scale.set(1.7);
+
     this.pauseButton.onPress.connect(() =>
       engine().navigation.presentPopup(PausePopup),
     );
@@ -309,10 +315,63 @@ export class MainScreen extends Container {
       anchor: 0.5,
       animations: buttonAnimations,
     });
+    this.settingsButton.scale.set(1.7);
     this.settingsButton.onPress.connect(() =>
       engine().navigation.presentPopup(SettingsPopup),
     );
     this.addChild(this.settingsButton);
+
+    this.blueFreeFlip = new FancyButton({
+      defaultView: "blueFlipIcon.png",
+      anchor: 0.5,
+      animations: buttonAnimations,
+    });
+    // this.blueFreeFlip.x = 10;
+    this.blueFreeFlip.onPress.connect(async () => {
+      if (this.blueFlipUsed) return;
+
+      if (typeof PokiSDK !== "undefined") {
+        const success = await PokiSDK.rewardedBreak();
+        if (success) {
+          this.blueFlipUsed = true;
+          this.blueFreeFlip.visible = false;
+        }
+      }
+    });
+    this.addChild(this.blueFreeFlip);
+    this.blueFreeFlip.alpha = 1;
+    this.blueFreeFlip.scale.set(0.15);
+    const blueBg = new Graphics();
+    blueBg.beginFill(0xffffff);
+    blueBg.drawCircle(0, 0, this.blueFreeFlip.width * 2.5);
+    blueBg.endFill();
+    this.blueFreeFlip.addChildAt(blueBg, 0);
+
+    this.redFreeFlip = new FancyButton({
+      defaultView: "redFlipIcon.png",
+      anchor: 0.5,
+      animations: buttonAnimations,
+    });
+    // this.redFreeFlip.x = 10;
+    this.redFreeFlip.onPress.connect(async () => {
+      if (this.redFlipUsed) return;
+
+      if (typeof PokiSDK !== "undefined") {
+        const success = await PokiSDK.rewardedBreak();
+        if (success) {
+          this.redFlipUsed = true;
+          this.redFreeFlip.visible = false;
+        }
+      }
+    });
+    this.addChild(this.redFreeFlip);
+    this.redFreeFlip.alpha = 1;
+    this.redFreeFlip.scale.set(0.15);
+    const redBg = new Graphics();
+    redBg.beginFill(0xffffff);
+    redBg.drawCircle(0, 0, this.redFreeFlip.width * 2.5);
+    redBg.endFill();
+    this.redFreeFlip.addChildAt(redBg, 0);
   }
 
   private endGame() {
@@ -391,6 +450,14 @@ export class MainScreen extends Container {
     this.settingsButton.x = width / 2 + BUTTON_GAP;
     this.settingsButton.y =
       height - BOTTOM_PADDING - this.settingsButton.height * 0.5;
+
+    // BLUE FREE FLIP button → top center (left)
+    this.blueFreeFlip.x = width / 2 - BUTTON_GAP;
+    this.blueFreeFlip.y = this.blueFreeFlip.height * 0.5 + BOTTOM_PADDING;
+
+    // RED FREE FLIP button → top center (right)
+    this.redFreeFlip.x = width / 2 + BUTTON_GAP;
+    this.redFreeFlip.y = this.redFreeFlip.height * 0.5 + BOTTOM_PADDING;
 
     // TOP-left
     this.blueTurnPill.x = 0;
