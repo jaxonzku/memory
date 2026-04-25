@@ -5,6 +5,7 @@ import { animate } from "motion";
 import type { AnimationPlaybackControls } from "motion/react";
 import type { Ticker } from "pixi.js";
 import { CardGrid } from "./CardGrid";
+import { getGameMode, isSinglePlayerMode } from "../../gameMode";
 import { engine } from "../../getEngine";
 import { GameOverPopup } from "../../popups/GameOverPopup";
 import { PausePopup } from "../../popups/PausePopup";
@@ -20,18 +21,21 @@ import {
   Assets,
 } from "pixi.js";
 import { AppColors } from "../../theme/colors";
+import { AnimatedBackground } from "../../ui/AnimatedBackground";
 
 /** The screen that holds the app */
 export class MainScreen extends Container {
   public static assetBundles = ["main"];
   private static readonly TOTAL_PAIRS = 14;
   public mainContainer: Container;
+  private grid!: CardGrid;
   private pauseButton: FancyButton;
   private settingsButton: FancyButton;
   private blueScore = 0;
   private redScore = 0;
   // private turnText!: Text;
   private paused = false;
+  private bgShapes: AnimatedBackground;
   private bgBlue!: Sprite;
   private bgRed!: Sprite;
   private blueScorePill!: Container;
@@ -45,6 +49,8 @@ export class MainScreen extends Container {
   private redFreeFlip: FancyButton;
   private blueFlipUsed = false;
   private redFlipUsed = false;
+  private bonusAdPending = false;
+  private readonly gameMode = getGameMode();
 
   private createTurnPill(
     bgColor: number,
@@ -172,15 +178,23 @@ export class MainScreen extends Container {
     this.addChild(this.bgBlue);
     this.addChild(this.bgRed);
 
+    this.bgShapes = new AnimatedBackground({
+      showBase: false,
+      shapeAlpha: 0.12,
+    });
+    this.bgShapes.alpha = 1;
+    this.addChild(this.bgShapes);
+
     this.mainContainer = new Container();
     this.addChild(this.mainContainer);
 
     // CARD GRID
-    const grid = new CardGrid(
+    this.grid = new CardGrid(
       MainScreen.TOTAL_PAIRS,
       4,
       100,
-      ({ player, matched }) => {
+      this.gameMode,
+      ({ player, matched, nextPlayer }) => {
         if (this.gameOver) return;
 
         // update score
@@ -211,41 +225,13 @@ export class MainScreen extends Container {
         }
 
         // determine current turn AFTER move
-        const isBlueTurn = matched
-          ? player === "blue" // same player continues
-          : player !== "blue"; // switch player on miss
-
-        // update turn text
-        // this.turnText.text = `Turn: ${isBlueTurn ? "Blue" : "Red"}`;
-        // this.turnText.style.fill = isBlueTurn
-        //   ? AppColors.turnBlue
-        //   : AppColors.turnRed;
-        this.blueTurnPill.visible = isBlueTurn;
-        this.redTurnPill.visible = !isBlueTurn;
-
-        const pill = isBlueTurn ? this.blueTurnPill : this.redTurnPill;
-
-        gsap.fromTo(
-          pill,
-          { alpha: 0, x: pill.x - 30 },
-          { alpha: 1, x: pill.x, duration: 0.3, ease: "power2.out" },
-        );
-
-        // update background EVERY turn end]
-        gsap.killTweensOf([this.bgBlue, this.bgRed]);
-
-        if (isBlueTurn) {
-          gsap.to(this.bgBlue, { alpha: 1, duration: 0.4, ease: "sine.out" });
-          gsap.to(this.bgRed, { alpha: 0, duration: 0.4, ease: "sine.out" });
-        } else {
-          gsap.to(this.bgBlue, { alpha: 0, duration: 0.4, ease: "sine.out" });
-          gsap.to(this.bgRed, { alpha: 1, duration: 0.4, ease: "sine.out" });
-        }
+        this.updateTurnDisplay(nextPlayer);
+        this.updateBonusButtons(nextPlayer);
       },
     );
     const blueTurn = this.createTurnPill(
       AppColors.turnBlue,
-      "Blue's Turn",
+      isSinglePlayerMode() ? "Your Turn" : "Blue's Turn",
       "left",
     );
     this.blueTurnPill = blueTurn.container;
@@ -261,8 +247,8 @@ export class MainScreen extends Container {
     this.addChild(this.redTurnPill);
 
     // Blue starts
-    this.blueTurnPill.visible = true;
-    this.redTurnPill.visible = false;
+    this.updateTurnDisplay("blue", false);
+    this.updateBonusButtons("blue");
 
     const blue = this.createScorePill(AppColors.turnBlue, 0xffffff, "left");
     this.blueScorePill = blue.container;
@@ -280,9 +266,12 @@ export class MainScreen extends Container {
     // });
     // this.addChild(this.turnText);
 
-    const bounds = grid.getLocalBounds();
-    grid.pivot.set(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
-    this.mainContainer.addChild(grid);
+    const bounds = this.grid.getLocalBounds();
+    this.grid.pivot.set(
+      bounds.x + bounds.width / 2,
+      bounds.y + bounds.height / 2,
+    );
+    this.mainContainer.addChild(this.grid);
 
     // BUTTON ANIMATIONS
     const buttonAnimations = {
@@ -326,20 +315,12 @@ export class MainScreen extends Container {
       anchor: 0.5,
       animations: buttonAnimations,
     });
-    // this.blueFreeFlip.x = 10;
-    this.blueFreeFlip.onPress.connect(async () => {
-      if (this.blueFlipUsed) return;
-
-      if (typeof PokiSDK !== "undefined") {
-        const success = await PokiSDK.rewardedBreak();
-        if (success) {
-          this.blueFlipUsed = true;
-          this.blueFreeFlip.visible = false;
-        }
-      }
+    this.blueFreeFlip.onPress.connect(() => {
+      void this.handleBonusReward("blue");
     });
     this.addChild(this.blueFreeFlip);
-    this.blueFreeFlip.alpha = 1;
+    this.blueFreeFlip.alpha = isSinglePlayerMode() ? 0 : 1;
+    this.blueFreeFlip.visible = !isSinglePlayerMode();
     this.blueFreeFlip.scale.set(0.15);
     const blueBg = new Graphics();
     blueBg.beginFill(0xffffff);
@@ -352,26 +333,74 @@ export class MainScreen extends Container {
       anchor: 0.5,
       animations: buttonAnimations,
     });
-    // this.redFreeFlip.x = 10;
-    this.redFreeFlip.onPress.connect(async () => {
-      if (this.redFlipUsed) return;
-
-      if (typeof PokiSDK !== "undefined") {
-        const success = await PokiSDK.rewardedBreak();
-        if (success) {
-          this.redFlipUsed = true;
-          this.redFreeFlip.visible = false;
-        }
-      }
+    this.redFreeFlip.onPress.connect(() => {
+      void this.handleBonusReward("red");
     });
     this.addChild(this.redFreeFlip);
-    this.redFreeFlip.alpha = 1;
+    this.redFreeFlip.alpha = isSinglePlayerMode() ? 0 : 1;
+    this.redFreeFlip.visible = !isSinglePlayerMode();
     this.redFreeFlip.scale.set(0.15);
     const redBg = new Graphics();
     redBg.beginFill(0xffffff);
     redBg.drawCircle(0, 0, this.redFreeFlip.width * 2.5);
     redBg.endFill();
     this.redFreeFlip.addChildAt(redBg, 0);
+  }
+
+  private updateBonusButtons(currentTurn: "blue" | "red") {
+    const singlePlayer = isSinglePlayerMode();
+    const blueVisible = !singlePlayer && !this.blueFlipUsed;
+    const redVisible = !singlePlayer && !this.redFlipUsed;
+    const blueActive =
+      blueVisible && currentTurn === "blue" && !this.bonusAdPending;
+    const redActive =
+      redVisible && currentTurn === "red" && !this.bonusAdPending;
+
+    this.blueFreeFlip.visible = blueVisible;
+    this.redFreeFlip.visible = redVisible;
+    this.blueFreeFlip.alpha = blueActive ? 1 : blueVisible ? 0.45 : 0;
+    this.redFreeFlip.alpha = redActive ? 1 : redVisible ? 0.45 : 0;
+  }
+
+  private async handleBonusReward(player: "blue" | "red") {
+    if (
+      isSinglePlayerMode() ||
+      this.gameOver ||
+      this.paused ||
+      this.bonusAdPending
+    ) {
+      return;
+    }
+
+    const alreadyUsed =
+      player === "blue" ? this.blueFlipUsed : this.redFlipUsed;
+    if (alreadyUsed || !this.grid.canActivateBonusTurn(player)) return;
+
+    this.bonusAdPending = true;
+    this.mainContainer.interactiveChildren = false;
+    this.updateBonusButtons(player);
+
+    try {
+      if (typeof PokiSDK === "undefined") return;
+
+      const success = await PokiSDK.rewardedBreak();
+      if (!success || !this.grid.activateBonusTurn(player)) return;
+
+      if (player === "blue") {
+        this.blueFlipUsed = true;
+      } else {
+        this.redFlipUsed = true;
+      }
+
+      this.updateTurnDisplay(player, false);
+      this.updateBonusButtons(player);
+    } finally {
+      this.bonusAdPending = false;
+      if (!this.gameOver && !this.paused) {
+        this.mainContainer.interactiveChildren = true;
+      }
+      this.updateBonusButtons(player);
+    }
   }
 
   private endGame() {
@@ -382,15 +411,54 @@ export class MainScreen extends Container {
       this.blueScore === this.redScore
         ? "Tie"
         : this.blueScore > this.redScore
-          ? "Blue"
+          ? isSinglePlayerMode()
+            ? "You"
+            : "Blue"
           : "Red";
 
     GameOverPopup.setResult({
       winner,
       blueScore: this.blueScore,
       redScore: this.redScore,
+      singlePlayer: isSinglePlayerMode(),
     });
     void engine().navigation.presentPopup(GameOverPopup);
+  }
+
+  private updateTurnDisplay(currentTurn: "blue" | "red", animateTurn = true) {
+    const isBlueTurn = currentTurn === "blue";
+
+    this.blueTurnPill.visible = isBlueTurn;
+    this.redTurnPill.visible = !isBlueTurn;
+
+    const pill = isBlueTurn ? this.blueTurnPill : this.redTurnPill;
+    const baseX = isBlueTurn ? 0 : this.redTurnPill.x;
+
+    gsap.killTweensOf([
+      this.bgBlue,
+      this.bgRed,
+      this.blueTurnPill,
+      this.redTurnPill,
+    ]);
+
+    pill.alpha = 1;
+    pill.x = baseX;
+
+    if (animateTurn) {
+      gsap.fromTo(
+        pill,
+        { alpha: 0, x: baseX - 30 },
+        { alpha: 1, x: baseX, duration: 0.3, ease: "power2.out" },
+      );
+    }
+
+    if (isBlueTurn) {
+      gsap.to(this.bgBlue, { alpha: 1, duration: 0.4, ease: "sine.out" });
+      gsap.to(this.bgRed, { alpha: 0, duration: 0.4, ease: "sine.out" });
+    } else {
+      gsap.to(this.bgBlue, { alpha: 0, duration: 0.4, ease: "sine.out" });
+      gsap.to(this.bgRed, { alpha: 1, duration: 0.4, ease: "sine.out" });
+    }
   }
 
   public prepare() {}
@@ -428,6 +496,7 @@ export class MainScreen extends Container {
 
     this.bgRed.width = width;
     this.bgRed.height = height;
+    this.bgShapes.resize(width, height);
 
     const BASE_PILL_SIZE = 340;
     const hudScale = Math.min(1, width / BASE_PILL_SIZE);

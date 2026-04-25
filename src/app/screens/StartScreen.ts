@@ -2,6 +2,7 @@ import { FancyButton } from "@pixi/ui";
 import { animate } from "motion";
 import { Container, Sprite, Texture } from "pixi.js";
 
+import { setGameMode } from "../gameMode";
 import { engine } from "../getEngine";
 import { AppColors } from "../theme/colors";
 import { SettingsPopup } from "../popups/SettingsPopup";
@@ -14,13 +15,16 @@ import { AnimatedBackground } from "../ui/AnimatedBackground";
 /** Initial screen shown before gameplay starts */
 export class StartScreen extends Container {
   public static assetBundles = ["main"];
+  private static readonly PANEL_WIDTH = 460;
+  private static readonly PANEL_HEIGHT = 500;
 
   private bg: AnimatedBackground;
   private panel: Container;
   private panelBase: RoundedBox;
   private title: Label;
   private subtitle: Label;
-  private playButton: Button;
+  private twoPlayerButton: Button;
+  private singlePlayerButton: Button;
   private settingsButton: FancyButton;
 
   constructor() {
@@ -32,7 +36,10 @@ export class StartScreen extends Container {
     this.panel = new Container();
     this.addChild(this.panel);
 
-    this.panelBase = new RoundedBox({ width: 460, height: 380 });
+    this.panelBase = new RoundedBox({
+      width: StartScreen.PANEL_WIDTH,
+      height: StartScreen.PANEL_HEIGHT,
+    });
     this.panel.addChild(this.panelBase);
 
     this.title = new Label({
@@ -42,25 +49,30 @@ export class StartScreen extends Container {
         fontSize: 42,
       },
     });
-    this.title.y = -118;
     this.panel.addChild(this.title);
 
     this.subtitle = new Label({
-      text: "Press play when you're ready.",
+      text: "Choose a mode to start the game.",
       style: {
         fill: AppColors.panelText,
-        fontSize: 20,
+        fontSize: 18,
       },
     });
-    this.subtitle.y = -70;
     this.panel.addChild(this.subtitle);
 
-    this.playButton = new Button({ text: "Play" });
-    this.playButton.y = 12;
-    this.playButton.onPress.connect(() => {
+    this.twoPlayerButton = new Button({ text: "2 Player" });
+    this.twoPlayerButton.onPress.connect(() => {
+      setGameMode("two-player");
       void engine().navigation.showScreen(MainScreen);
     });
-    this.panel.addChild(this.playButton);
+    this.panel.addChild(this.twoPlayerButton);
+
+    this.singlePlayerButton = new Button({ text: "Single Player" });
+    this.singlePlayerButton.onPress.connect(() => {
+      setGameMode("single-player");
+      void engine().navigation.showScreen(MainScreen);
+    });
+    this.panel.addChild(this.singlePlayerButton);
 
     const buttonAnimations = {
       hover: {
@@ -81,14 +93,40 @@ export class StartScreen extends Container {
       anchor: 0.5,
       animations: buttonAnimations,
     });
-    this.settingsButton.y = 118;
     this.settingsButton.onPress.connect(() => {
       void engine().navigation.presentPopup(SettingsPopup);
     });
     this.panel.addChild(this.settingsButton);
+
+    this.layoutPanelContent();
   }
 
   public prepare() {}
+
+  private layoutPanelContent() {
+    const items = [
+      this.title,
+      this.subtitle,
+      this.twoPlayerButton,
+      this.singlePlayerButton,
+      this.settingsButton,
+    ];
+
+    const itemHeights = items.map((item) => item.getLocalBounds().height);
+    const totalHeight = itemHeights.reduce((sum, height) => sum + height, 0);
+    const naturalGap =
+      (StartScreen.PANEL_HEIGHT - totalHeight) / (items.length + 1);
+    const gap = naturalGap * 0.88;
+    const totalStackHeight = totalHeight + gap * (items.length - 1);
+
+    let currentY = -totalStackHeight / 2;
+
+    items.forEach((item, index) => {
+      const height = itemHeights[index] ?? 0;
+      item.y = currentY + height / 2;
+      currentY += height + gap;
+    });
+  }
 
   public resize(width: number, height: number) {
     this.panel.position.set(width * 0.5, height * 0.5);

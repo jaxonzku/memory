@@ -3,6 +3,8 @@
 import { Container } from "pixi.js";
 import { Card } from "./Card";
 import { engine } from "../../getEngine";
+import type { GameMode } from "../../gameMode";
+import { waitFor } from "../../../engine/utils/waitFor";
 
 const STATIC_ROTATIONS = [
   -8, -4, 3, 7, -6, 2, 6, -3, 4, -7, 1, 5, -5, 8, -2, 3, 6, -4, 7, -6,
@@ -11,6 +13,7 @@ const STATIC_ROTATIONS = [
 type TurnResult = {
   player: "blue" | "red";
   matched: boolean;
+  nextPlayer: "blue" | "red";
 };
 
 enum Player {
@@ -43,21 +46,29 @@ function shuffle<T>(items: T[]) {
 }
 
 export class CardGrid extends Container {
+  private static readonly AI_KNOWN_PAIR_CHANCE = 0.45;
+  private static readonly AI_SECOND_FLIP_MEMORY_CHANCE = 0.7;
+  private static readonly AI_MEMORY_RETENTION_CHANCE = 0.75;
+
   private onTurnEnd?: (result: TurnResult) => void;
   private cards: Card[] = [];
   private selected: Card[] = [];
   private currentPlayer: Player = Player.Blue;
+  private gameMode: GameMode;
+  private rememberedCards = new Map<number, Set<Card>>();
   private busy = false;
 
   constructor(
     pairs = 18,
     _cols = 6,
     _gap = 400,
+    gameMode: GameMode = "two-player",
     onTurnEnd?: (result: TurnResult) => void,
   ) {
     super();
     void _cols;
     void _gap;
+    this.gameMode = gameMode;
     this.onTurnEnd = onTurnEnd;
 
     // create shuffled deck
@@ -143,28 +154,41 @@ export class CardGrid extends Container {
 
   private onCardClick(card: Card) {
     if (this.busy) return;
+    if (
+      this.gameMode === "single-player" &&
+      this.currentPlayer === Player.Red
+    ) {
+      return;
+    }
     if (card.flipped || card.removed) return;
 
+    this.flipCard(card);
+  }
+
+  private flipCard(card: Card) {
     engine().audio.sfx.play("main/sounds/card-flip.mp3");
     card.reveal();
+    this.rememberCard(card);
     this.selected.push(card);
 
     if (this.selected.length === 2) {
       this.busy = true;
-      setTimeout(() => this.checkMatch(), 700);
+      window.setTimeout(() => this.checkMatch(), 700);
     }
   }
 
   private checkMatch() {
     const [a, b] = this.selected;
-    const player = this.currentPlayer === Player.Blue ? "blue" : "red";
+    const player: TurnResult["player"] =
+      this.currentPlayer === Player.Blue ? "blue" : "red";
+    const matched = a.id === b.id;
+    let nextPlayer: TurnResult["nextPlayer"] = player;
 
-    if (a.id === b.id) {
+    if (matched) {
       engine().audio.sfx.play("main/sounds/score.mp3");
       a.animateRemove();
       b.animateRemove();
-      this.onTurnEnd?.({ player, matched: true });
-      // same player continues
+      this.forgetCardId(a.id);
     } else {
       engine().audio.sfx.play("main/sounds/wrong.mp3");
       a.shake();
@@ -172,16 +196,130 @@ export class CardGrid extends Container {
 
       a.hide();
       b.hide();
-      this.onTurnEnd?.({ player, matched: false });
       this.switchPlayer();
+      nextPlayer = this.currentPlayer === Player.Blue ? "blue" : "red";
     }
 
     this.selected = [];
     this.busy = false;
+    this.onTurnEnd?.({ player, matched, nextPlayer });
+
+    if (this.gameMode === "single-player" && nextPlayer === "red") {
+      void this.startComputerTurn();
+    }
   }
 
   private switchPlayer() {
     this.currentPlayer =
       this.currentPlayer === Player.Blue ? Player.Red : Player.Blue;
+  }
+
+  private rememberCard(card: Card) {
+    if (
+      this.gameMode === "single-player" &&
+      this.currentPlayer === Player.Red &&
+      Math.random() > CardGrid.AI_MEMORY_RETENTION_CHANCE
+    ) {
+      return;
+    }
+
+    const knownCards = this.rememberedCards.get(card.id) ?? new Set<Card>();
+    knownCards.add(card);
+    this.rememberedCards.set(card.id, knownCards);
+  }
+
+  private forgetCardId(id: number) {
+    this.rememberedCards.delete(id);
+  }
+
+  private getAvailableCards(excluded: Card[] = []) {
+    return this.cards.filter(
+      (card) =>
+        !card.removed &&
+        !card.flipped &&
+        !excluded.includes(card) &&
+        !this.selected.includes(card),
+    );
+  }
+
+  private getUnknownCards(excluded: Card[] = []) {
+    return this.getAvailableCards(excluded).filter(
+      (card) => !this.rememberedCards.get(card.id)?.has(card),
+    );
+  }
+
+  private pickRandomCard(cards: Card[]) {
+    if (cards.length === 0) return null;
+    const index = Math.floor(Math.random() * cards.length);
+    return cards[index] ?? null;
+  }
+
+  private getKnownMatchFor(card: Card) {
+    const matches = [...(this.rememberedCards.get(card.id) ?? [])].filter(
+      (knownCard) =>
+        knownCard !== card &&
+        !knownCard.removed &&
+        !knownCard.flipped &&
+        !this.selected.includes(knownCard),
+    );
+
+    return matches[0] ?? null;
+  }
+
+  private getKnownPairStart() {
+    for (const knownCards of this.rememberedCards.values()) {
+      const availableCards = [...knownCards].filter(
+        (card) =>
+          !card.removed && !card.flipped && !this.selected.includes(card),
+      );
+
+      if (availableCards.length >= 2) {
+        return availableCards[0] ?? null;
+      }
+    }
+
+    return null;
+  }
+
+  private chooseComputerCard() {
+    if (this.selected.length === 1) {
+      const knownMatch = this.getKnownMatchFor(this.selected[0]);
+      if (knownMatch && Math.random() < CardGrid.AI_SECOND_FLIP_MEMORY_CHANCE) {
+        return knownMatch;
+      }
+
+      return (
+        this.pickRandomCard(this.getUnknownCards(this.selected)) ??
+        this.pickRandomCard(this.getAvailableCards(this.selected))
+      );
+    }
+
+    const knownPairStart = this.getKnownPairStart();
+    if (knownPairStart && Math.random() < CardGrid.AI_KNOWN_PAIR_CHANCE) {
+      return knownPairStart;
+    }
+
+    return (
+      this.pickRandomCard(this.getUnknownCards()) ??
+      this.pickRandomCard(this.getAvailableCards())
+    );
+  }
+
+  private async startComputerTurn() {
+    if (this.busy || this.currentPlayer !== Player.Red) return;
+
+    this.busy = true;
+    await waitFor(0.6);
+
+    while (this.currentPlayer === Player.Red && this.selected.length < 2) {
+      const card = this.chooseComputerCard();
+      if (!card) {
+        this.busy = false;
+        return;
+      }
+
+      this.flipCard(card);
+      await waitFor(0.75);
+    }
   }
 }

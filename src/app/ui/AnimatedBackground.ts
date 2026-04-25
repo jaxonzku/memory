@@ -7,14 +7,21 @@ class FloatingShape extends Graphics {
   public rotSpeed = 0;
 }
 
+type AnimatedBackgroundOptions = {
+  showBase?: boolean;
+  shapeAlpha?: number;
+};
+
 export class AnimatedBackground extends Container {
   private bgBase: Graphics;
   private shapes: FloatingShape[] = [];
   private w = 800;
   private h = 600;
+  private readonly showBase: boolean;
 
-  constructor() {
+  constructor(options: AnimatedBackgroundOptions = {}) {
     super();
+    this.showBase = options.showBase ?? true;
     this.bgBase = new Graphics();
     this.addChild(this.bgBase);
 
@@ -30,7 +37,7 @@ export class AnimatedBackground extends Container {
         shape.roundRect(-size / 2, -size / 2, size, size, 15);
       }
 
-      shape.fill({ color: 0xffffff, alpha: 0.1 });
+      shape.fill({ color: 0xffffff, alpha: options.shapeAlpha ?? 0.1 });
 
       shape.x = Math.random() * 2000;
       shape.y = Math.random() * 2000;
@@ -50,8 +57,14 @@ export class AnimatedBackground extends Container {
     this.h = h;
     this.bgBase.clear();
     this.bgBase.rect(0, 0, w, h);
-    // Use the color directly; PixiJS v8 Color can parse strings including #RGBA
-    this.bgBase.fill(AppColors.appBackground);
+
+    if (this.showBase) {
+      // Use the color directly; PixiJS v8 Color can parse strings including #RGBA
+      this.bgBase.fill(AppColors.appBackground);
+    } else {
+      // Keep the mask active without drawing a visible solid background.
+      this.bgBase.fill({ color: 0xffffff, alpha: 0.001 });
+    }
 
     // Use bgBase as the mask to clamp the container's bounds
     this.mask = this.bgBase;

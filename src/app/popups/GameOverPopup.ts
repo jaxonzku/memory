@@ -8,15 +8,17 @@ import { Label } from "../ui/Label";
 import { RoundedBox } from "../ui/RoundedBox";
 
 type GameOverResult = {
-  winner: "Blue" | "Red" | "Tie";
+  winner: "Blue" | "Red" | "Tie" | "You";
   blueScore: number;
   redScore: number;
+  singlePlayer: boolean;
 };
 
 const defaultResult: GameOverResult = {
   winner: "Tie",
   blueScore: 0,
   redScore: 0,
+  singlePlayer: false,
 };
 
 /** Popup shown when the game is over */
@@ -66,7 +68,9 @@ export class GameOverPopup extends Container {
     this.panel.addChild(this.winnerLabel);
 
     this.scoreLabel = new Label({
-      text: `Blue ${result.blueScore} - ${result.redScore} Red`,
+      text: result.singlePlayer
+        ? `You ${result.blueScore} - ${result.redScore} Red`
+        : `Blue ${result.blueScore} - ${result.redScore} Red`,
       style: { fill: AppColors.panelText, fontSize: 28, align: "center" },
     });
     this.scoreLabel.y = 30;
