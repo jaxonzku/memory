@@ -22,6 +22,7 @@ import {
 } from "pixi.js";
 import { AppColors } from "../../theme/colors";
 import { AnimatedBackground } from "../../ui/AnimatedBackground";
+import { Label } from "../../ui/Label";
 
 /** The screen that holds the app */
 export class MainScreen extends Container {
@@ -47,6 +48,7 @@ export class MainScreen extends Container {
   private redTurnPill!: Container;
   private blueFreeFlip: FancyButton;
   private redFreeFlip: FancyButton;
+  private freeFlipTooltip!: Container;
   private blueFlipUsed = false;
   private redFlipUsed = false;
   private bonusAdPending = false;
@@ -165,6 +167,34 @@ export class MainScreen extends Container {
     return { container, label };
   }
 
+  private createFreeFlipTooltip() {
+    const container = new Container();
+    const bg = new Graphics();
+    const label = new Label({
+      text: "Watch an ad to auto-flip 2 cards.",
+      style: {
+        fill: 0xffffff,
+        fontSize: 18,
+      },
+    });
+
+    const paddingX = 22;
+    const paddingY = 14;
+    const bounds = label.getLocalBounds();
+    const width = bounds.width + paddingX * 2;
+    const height = bounds.height + paddingY * 2;
+
+    bg.roundRect(-width / 2, -height / 2, width, height, 18)
+      .fill({ color: 0x126a9b, alpha: 0.96 })
+      .stroke({ width: 3, color: 0xffffff, alpha: 0.95 });
+
+    container.visible = false;
+    container.alpha = 0;
+    container.addChild(bg, label);
+
+    return { container, bg, label };
+  }
+
   constructor() {
     super();
     this.bgBlue = new Sprite(Texture.WHITE);
@@ -226,7 +256,6 @@ export class MainScreen extends Container {
 
         // determine current turn AFTER move
         this.updateTurnDisplay(nextPlayer);
-        this.updateBonusButtons(nextPlayer);
       },
     );
     const blueTurn = this.createTurnPill(
@@ -248,7 +277,6 @@ export class MainScreen extends Container {
 
     // Blue starts
     this.updateTurnDisplay("blue", false);
-    this.updateBonusButtons("blue");
 
     const blue = this.createScorePill(AppColors.turnBlue, 0xffffff, "left");
     this.blueScorePill = blue.container;
@@ -316,7 +344,7 @@ export class MainScreen extends Container {
       animations: buttonAnimations,
     });
     this.blueFreeFlip.onPress.connect(() => {
-      void this.handleBonusReward("blue");
+      void this.handleRewardedAutoFlip("blue");
     });
     this.addChild(this.blueFreeFlip);
     this.blueFreeFlip.alpha = isSinglePlayerMode() ? 0 : 1;
@@ -327,6 +355,12 @@ export class MainScreen extends Container {
     blueBg.drawCircle(0, 0, this.blueFreeFlip.width * 2.5);
     blueBg.endFill();
     this.blueFreeFlip.addChildAt(blueBg, 0);
+    this.blueFreeFlip.onHover.connect(() => {
+      this.showFreeFlipTooltip(this.blueFreeFlip);
+    });
+    this.blueFreeFlip.onOut.connect(() => {
+      this.hideFreeFlipTooltip();
+    });
 
     this.redFreeFlip = new FancyButton({
       defaultView: "redFlipIcon.png",
@@ -334,7 +368,7 @@ export class MainScreen extends Container {
       animations: buttonAnimations,
     });
     this.redFreeFlip.onPress.connect(() => {
-      void this.handleBonusReward("red");
+      void this.handleRewardedAutoFlip("red");
     });
     this.addChild(this.redFreeFlip);
     this.redFreeFlip.alpha = isSinglePlayerMode() ? 0 : 1;
@@ -345,24 +379,45 @@ export class MainScreen extends Container {
     redBg.drawCircle(0, 0, this.redFreeFlip.width * 2.5);
     redBg.endFill();
     this.redFreeFlip.addChildAt(redBg, 0);
+    this.redFreeFlip.onHover.connect(() => {
+      this.showFreeFlipTooltip(this.redFreeFlip);
+    });
+    this.redFreeFlip.onOut.connect(() => {
+      this.hideFreeFlipTooltip();
+    });
+
+    const tooltip = this.createFreeFlipTooltip();
+    this.freeFlipTooltip = tooltip.container;
+    this.addChild(this.freeFlipTooltip);
   }
 
-  private updateBonusButtons(currentTurn: "blue" | "red") {
-    const singlePlayer = isSinglePlayerMode();
-    const blueVisible = !singlePlayer && !this.blueFlipUsed;
-    const redVisible = !singlePlayer && !this.redFlipUsed;
-    const blueActive =
-      blueVisible && currentTurn === "blue" && !this.bonusAdPending;
-    const redActive =
-      redVisible && currentTurn === "red" && !this.bonusAdPending;
+  private showFreeFlipTooltip(button: FancyButton) {
+    if (isSinglePlayerMode() || !button.visible) return;
 
-    this.blueFreeFlip.visible = blueVisible;
-    this.redFreeFlip.visible = redVisible;
-    this.blueFreeFlip.alpha = blueActive ? 1 : blueVisible ? 0.45 : 0;
-    this.redFreeFlip.alpha = redActive ? 1 : redVisible ? 0.45 : 0;
+    this.freeFlipTooltip.x = button.x;
+    this.freeFlipTooltip.y = button.y + button.height * 0.9;
+    this.freeFlipTooltip.visible = true;
+    gsap.killTweensOf(this.freeFlipTooltip);
+    gsap.to(this.freeFlipTooltip, {
+      alpha: 1,
+      duration: 0.16,
+      ease: "power2.out",
+    });
   }
 
-  private async handleBonusReward(player: "blue" | "red") {
+  private hideFreeFlipTooltip() {
+    gsap.killTweensOf(this.freeFlipTooltip);
+    gsap.to(this.freeFlipTooltip, {
+      alpha: 0,
+      duration: 0.14,
+      ease: "power2.out",
+      onComplete: () => {
+        this.freeFlipTooltip.visible = false;
+      },
+    });
+  }
+
+  private async handleRewardedAutoFlip(player: "blue" | "red") {
     if (
       isSinglePlayerMode() ||
       this.gameOver ||
@@ -374,32 +429,27 @@ export class MainScreen extends Container {
 
     const alreadyUsed =
       player === "blue" ? this.blueFlipUsed : this.redFlipUsed;
-    if (alreadyUsed || !this.grid.canActivateBonusTurn(player)) return;
+    if (alreadyUsed || !this.grid.canStartAutoFlip(player)) return;
 
     this.bonusAdPending = true;
-    this.mainContainer.interactiveChildren = false;
-    this.updateBonusButtons(player);
 
     try {
       if (typeof PokiSDK === "undefined") return;
 
       const success = await PokiSDK.rewardedBreak();
-      if (!success || !this.grid.activateBonusTurn(player)) return;
+      if (!success) return;
 
       if (player === "blue") {
         this.blueFlipUsed = true;
+        this.blueFreeFlip.visible = false;
       } else {
         this.redFlipUsed = true;
+        this.redFreeFlip.visible = false;
       }
 
-      this.updateTurnDisplay(player, false);
-      this.updateBonusButtons(player);
+      await this.grid.startAutoFlip(player);
     } finally {
       this.bonusAdPending = false;
-      if (!this.gameOver && !this.paused) {
-        this.mainContainer.interactiveChildren = true;
-      }
-      this.updateBonusButtons(player);
     }
   }
 
@@ -527,6 +577,14 @@ export class MainScreen extends Container {
     // RED FREE FLIP button → top center (right)
     this.redFreeFlip.x = width / 2 + BUTTON_GAP;
     this.redFreeFlip.y = this.redFreeFlip.height * 0.5 + BOTTOM_PADDING;
+
+    if (this.freeFlipTooltip.visible) {
+      const anchorButton = this.redFreeFlip.visible
+        ? this.redFreeFlip
+        : this.blueFreeFlip;
+      this.freeFlipTooltip.x = anchorButton.x;
+      this.freeFlipTooltip.y = anchorButton.y + anchorButton.height * 0.9;
+    }
 
     // TOP-left
     this.blueTurnPill.x = 0;

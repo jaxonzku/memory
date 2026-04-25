@@ -56,6 +56,7 @@ export class CardGrid extends Container {
   private currentPlayer: Player = Player.Blue;
   private gameMode: GameMode;
   private rememberedCards = new Map<number, Set<Card>>();
+  private bonusTurnPlayer: Player | null = null;
   private busy = false;
 
   constructor(
@@ -165,6 +166,41 @@ export class CardGrid extends Container {
     this.flipCard(card);
   }
 
+  public canStartAutoFlip(player: TurnResult["player"]) {
+    if (this.busy || this.selected.length > 0) return false;
+
+    const currentTurnPlayer =
+      this.currentPlayer === Player.Blue ? "blue" : "red";
+    return currentTurnPlayer === player && this.getAvailableCards().length >= 2;
+  }
+
+  public async startAutoFlip(player: TurnResult["player"]) {
+    if (!this.canStartAutoFlip(player)) return false;
+
+    this.bonusTurnPlayer = player === "blue" ? Player.Blue : Player.Red;
+    this.currentPlayer = this.bonusTurnPlayer;
+    this.busy = true;
+
+    await waitFor(0.35);
+
+    for (let i = 0; i < 2; i++) {
+      const card = this.pickRandomCard(this.getAvailableCards());
+      if (!card) {
+        this.busy = false;
+        this.bonusTurnPlayer = null;
+        return false;
+      }
+
+      this.flipCard(card);
+
+      if (i === 0) {
+        await waitFor(0.55);
+      }
+    }
+
+    return true;
+  }
+
   private flipCard(card: Card) {
     engine().audio.sfx.play("main/sounds/card-flip.mp3");
     card.reveal();
@@ -183,6 +219,7 @@ export class CardGrid extends Container {
       this.currentPlayer === Player.Blue ? "blue" : "red";
     const matched = a.id === b.id;
     let nextPlayer: TurnResult["nextPlayer"] = player;
+    const isBonusTurn = this.bonusTurnPlayer !== null;
 
     if (matched) {
       engine().audio.sfx.play("main/sounds/score.mp3");
@@ -196,6 +233,14 @@ export class CardGrid extends Container {
 
       a.hide();
       b.hide();
+    }
+
+    if (isBonusTurn) {
+      this.currentPlayer =
+        this.bonusTurnPlayer === Player.Blue ? Player.Red : Player.Blue;
+      nextPlayer = this.currentPlayer === Player.Blue ? "blue" : "red";
+      this.bonusTurnPlayer = null;
+    } else if (!matched) {
       this.switchPlayer();
       nextPlayer = this.currentPlayer === Player.Blue ? "blue" : "red";
     }
