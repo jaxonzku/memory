@@ -195,12 +195,12 @@ export class Navigation {
   /**
    * Dismiss current popup, if there is one
    */
-  public async dismissPopup() {
+  public async dismissPopup(resumeCurrentScreen = true) {
     if (!this.currentPopup) return;
     const popup = this.currentPopup;
     this.currentPopup = undefined;
     await this.hideAndRemoveScreen(popup);
-    if (this.currentScreen) {
+    if (resumeCurrentScreen && this.currentScreen) {
       this.currentScreen.interactiveChildren = true;
       this.currentScreen.resume?.();
     }

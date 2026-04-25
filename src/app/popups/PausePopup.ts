@@ -51,7 +51,7 @@ export class PausePopup extends Container {
     this.quitButton = new Button({ text: "Quit" });
     this.quitButton.y = 110;
     this.quitButton.onPress.connect(async () => {
-      await engine().navigation.dismissPopup();
+      await engine().navigation.dismissPopup(false);
       void engine().navigation.showScreen(StartScreen);
     });
     this.panel.addChild(this.quitButton);

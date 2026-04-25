@@ -436,7 +436,17 @@ export class MainScreen extends Container {
     try {
       if (typeof PokiSDK === "undefined") return;
 
-      const success = await PokiSDK.rewardedBreak();
+      const audio = engine().audio;
+      const oldVolume = audio.getMasterVolume();
+      audio.setMasterVolume(0);
+
+      let success = false;
+      try {
+        success = await PokiSDK.rewardedBreak();
+      } finally {
+        audio.setMasterVolume(oldVolume);
+      }
+
       if (!success) return;
 
       if (player === "blue") {
@@ -557,7 +567,13 @@ export class MainScreen extends Container {
     this.blueScorePill.scale.set(hudScale);
     this.redScorePill.scale.set(hudScale);
 
-    const BOTTOM_PADDING = Math.max(16, height * 0.02);
+    // Add safe padding to avoid Poki bottom banner overlays on mobile
+    const isMobileDevice =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      );
+    const SAFE_BOTTOM = isMobileDevice ? 85 : 0;
+    const BOTTOM_PADDING = Math.max(16, height * 0.02) + SAFE_BOTTOM;
     const BUTTON_GAP = 60;
 
     // PAUSE button → bottom center (left)
@@ -596,11 +612,11 @@ export class MainScreen extends Container {
 
     // BLUE – bottom-left
     this.blueScorePill.x = 0;
-    this.blueScorePill.y = height - hudSize;
+    this.blueScorePill.y = height - hudSize - SAFE_BOTTOM;
 
     // RED – bottom-right
     this.redScorePill.x = width - hudSize;
-    this.redScorePill.y = height - hudSize;
+    this.redScorePill.y = height - hudSize - SAFE_BOTTOM;
   }
 
   public async show(): Promise<void> {

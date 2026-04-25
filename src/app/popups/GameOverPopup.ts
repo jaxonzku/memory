@@ -87,9 +87,11 @@ export class GameOverPopup extends Container {
           const oldVolume = audio.getMasterVolume();
           audio.setMasterVolume(0);
 
-          await PokiSDK.commercialBreak();
-
-          audio.setMasterVolume(oldVolume);
+          try {
+            await PokiSDK.commercialBreak();
+          } finally {
+            audio.setMasterVolume(oldVolume);
+          }
         } catch (e) {
           console.warn("Poki Ad Blocked / Failed", e);
         }

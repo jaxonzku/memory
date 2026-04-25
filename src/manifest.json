@@ -9,20 +9,6 @@
       "assets": [
         {
           "alias": [
-            "main/logo-white.svg",
-            "logo-white.svg"
-          ],
-          "src": [
-            "main/logo-white.svg"
-          ],
-          "data": {
-            "tags": {
-              "m": true
-            }
-          }
-        },
-        {
-          "alias": [
             "main/sounds/bgm-main-1.mp3",
             "bgm-main-1.mp3"
           ],

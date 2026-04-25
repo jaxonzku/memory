@@ -36,7 +36,7 @@ extensions.add(CreationNavigationPlugin);
 export class CreationEngine extends Application {
   /** Initialize the application */
   public async init(opts: Partial<ApplicationOptions>): Promise<void> {
-    opts.resizeTo ??= window;
+    opts.resizeTo ??= document.getElementById("pixi-container")!;
     opts.resolution ??= getResolution();
     // opts.antialias = true;
     // opts.autoDensity = true;
