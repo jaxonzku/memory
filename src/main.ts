@@ -3,6 +3,7 @@ import { LoadScreen } from "./app/screens/LoadScreen";
 import { StartScreen } from "./app/screens/StartScreen";
 import { AppColors, selectThemeFromString } from "./app/theme/colors";
 import { userSettings } from "./app/utils/userSettings";
+import { crazyGamesLoadingStop, initCrazyGamesSdk } from "./crazygames";
 import { CreationEngine } from "./engine/engine";
 
 /**
@@ -16,6 +17,8 @@ const engine = new CreationEngine();
 setEngine(engine);
 
 (async () => {
+  await initCrazyGamesSdk();
+
   // Optional runtime theme switch: ?theme=neonArena
   selectThemeFromString(
     new URLSearchParams(window.location.search).get("theme"),
@@ -37,7 +40,5 @@ setEngine(engine);
   await engine.navigation.showScreen(StartScreen);
 
   // Signal that loading is finished
-  if (typeof PokiSDK !== "undefined") {
-    PokiSDK.gameLoadingFinished();
-  }
+  await crazyGamesLoadingStop();
 })();

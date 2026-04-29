@@ -5,6 +5,11 @@ import { animate } from "motion";
 import type { AnimationPlaybackControls } from "motion/react";
 import type { Ticker } from "pixi.js";
 import { CardGrid } from "./CardGrid";
+import {
+  crazyGamesGameplayStart,
+  crazyGamesGameplayStop,
+  requestCrazyGamesAd,
+} from "../../../crazygames";
 import { getGameMode, isSinglePlayerMode } from "../../gameMode";
 import { engine } from "../../getEngine";
 import { GameOverPopup } from "../../popups/GameOverPopup";
@@ -434,15 +439,13 @@ export class MainScreen extends Container {
     this.bonusAdPending = true;
 
     try {
-      if (typeof PokiSDK === "undefined") return;
-
       const audio = engine().audio;
       const oldVolume = audio.getMasterVolume();
       audio.setMasterVolume(0);
 
       let success = false;
       try {
-        success = await PokiSDK.rewardedBreak();
+        success = await requestCrazyGamesAd("rewarded");
       } finally {
         audio.setMasterVolume(oldVolume);
       }
@@ -531,18 +534,14 @@ export class MainScreen extends Container {
   public async pause() {
     this.mainContainer.interactiveChildren = false;
     this.paused = true;
-    if (typeof PokiSDK !== "undefined") {
-      PokiSDK.gameplayStop();
-    }
+    crazyGamesGameplayStop();
   }
 
   public async resume() {
     if (this.gameOver) return;
     this.mainContainer.interactiveChildren = true;
     this.paused = false;
-    if (typeof PokiSDK !== "undefined") {
-      PokiSDK.gameplayStart();
-    }
+    crazyGamesGameplayStart();
   }
 
   public reset() {}
@@ -567,13 +566,16 @@ export class MainScreen extends Container {
     this.blueScorePill.scale.set(hudScale);
     this.redScorePill.scale.set(hudScale);
 
-    // Add safe padding to avoid Poki bottom banner overlays on mobile
+    // Add extra HUD padding on mobile embeds so browser/site chrome doesn't clip UI.
     const isMobileDevice =
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent,
       );
-    const SAFE_BOTTOM = isMobileDevice ? 85 : 0;
-    const BOTTOM_PADDING = Math.max(16, height * 0.02) + SAFE_BOTTOM;
+    const SAFE_BOTTOM = isMobileDevice ? 110 : 0;
+    const BOTTOM_PADDING = Math.max(24, height * 0.03) + SAFE_BOTTOM;
+    const SCORE_BOTTOM_INSET = isMobileDevice
+      ? BOTTOM_PADDING + 36
+      : Math.max(28, BOTTOM_PADDING);
     const BUTTON_GAP = 60;
 
     // PAUSE button → bottom center (left)
@@ -612,17 +614,15 @@ export class MainScreen extends Container {
 
     // BLUE – bottom-left
     this.blueScorePill.x = 0;
-    this.blueScorePill.y = height - hudSize - SAFE_BOTTOM;
+    this.blueScorePill.y = height - hudSize - SCORE_BOTTOM_INSET;
 
     // RED – bottom-right
     this.redScorePill.x = width - hudSize;
-    this.redScorePill.y = height - hudSize - SAFE_BOTTOM;
+    this.redScorePill.y = height - hudSize - SCORE_BOTTOM_INSET;
   }
 
   public async show(): Promise<void> {
-    if (typeof PokiSDK !== "undefined") {
-      PokiSDK.gameplayStart();
-    }
+    crazyGamesGameplayStart();
     await Assets.load([
       "/assets/preload/coookie_man.svg",
       "/assets/preload/cup_cake.svg",

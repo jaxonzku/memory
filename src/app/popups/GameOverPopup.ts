@@ -1,6 +1,7 @@
 import { animate } from "motion";
 import { BlurFilter, Container, Sprite, Texture } from "pixi.js";
 
+import { requestCrazyGamesAd } from "../../crazygames";
 import { engine } from "../getEngine";
 import { AppColors } from "../theme/colors";
 import { Button } from "../ui/Button";
@@ -79,22 +80,14 @@ export class GameOverPopup extends Container {
     this.doneButton = new Button({ text: "Play Again" });
     this.doneButton.y = 105;
     this.doneButton.onPress.connect(async () => {
-      // Poki SDK: Show Commercial Break
-      if (typeof PokiSDK !== "undefined") {
-        try {
-          // Mute audio during the ad
-          const audio = engine().audio;
-          const oldVolume = audio.getMasterVolume();
-          audio.setMasterVolume(0);
+      const audio = engine().audio;
+      const oldVolume = audio.getMasterVolume();
+      audio.setMasterVolume(0);
 
-          try {
-            await PokiSDK.commercialBreak();
-          } finally {
-            audio.setMasterVolume(oldVolume);
-          }
-        } catch (e) {
-          console.warn("Poki Ad Blocked / Failed", e);
-        }
+      try {
+        await requestCrazyGamesAd("midgame");
+      } finally {
+        audio.setMasterVolume(oldVolume);
       }
 
       const ctor = engine().navigation.currentScreen
