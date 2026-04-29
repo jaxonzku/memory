@@ -79,24 +79,6 @@ export class GameOverPopup extends Container {
     this.doneButton = new Button({ text: "Play Again" });
     this.doneButton.y = 105;
     this.doneButton.onPress.connect(async () => {
-      // Poki SDK: Show Commercial Break
-      if (typeof PokiSDK !== "undefined") {
-        try {
-          // Mute audio during the ad
-          const audio = engine().audio;
-          const oldVolume = audio.getMasterVolume();
-          audio.setMasterVolume(0);
-
-          try {
-            await PokiSDK.commercialBreak();
-          } finally {
-            audio.setMasterVolume(oldVolume);
-          }
-        } catch (e) {
-          console.warn("Poki Ad Blocked / Failed", e);
-        }
-      }
-
       const ctor = engine().navigation.currentScreen
         ?.constructor as unknown as new () => Container;
       await engine().navigation.dismissPopup();

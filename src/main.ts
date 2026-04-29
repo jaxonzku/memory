@@ -33,11 +33,5 @@ setEngine(engine);
   // Show the load screen
   await engine.navigation.showScreen(LoadScreen);
 
-  // Show the start screen once loading is complete
   await engine.navigation.showScreen(StartScreen);
-
-  // Signal that loading is finished
-  if (typeof PokiSDK !== "undefined") {
-    PokiSDK.gameLoadingFinished();
-  }
 })();

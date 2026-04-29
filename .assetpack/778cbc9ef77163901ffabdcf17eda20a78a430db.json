@@ -6,8 +6,8 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1777118423479,
-                "duration": 0.9385839998722076,
+                "date": 1777369486282,
+                "duration": 7.155624999999418,
                 "success": true
             }
         },
@@ -20,8 +20,8 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1777118332356,
-                "duration": 0.07320799957960844,
+                "date": 1777369486282,
+                "duration": 6.7456249999959255,
                 "success": true
             }
         },
@@ -509,21 +509,10 @@
             },
             "transformData": {},
             "stats": {
-                "date": 1777118257849,
-                "duration": 220.40574999991804,
+                "date": 1777369486282,
+                "duration": 87.70920900000783,
                 "success": true
             }
-        },
-        "/Users/jacksonjames/projects/memory/raw-assets/main{m}/ui{tps}/blueFlipIcon.png": {
-            "isFolder": false,
-            "parent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/ui{tps}",
-            "metaData": {},
-            "inheritedMetaData": {
-                "m": true,
-                "tps": true
-            },
-            "transformData": {},
-            "hash": "GTTMzA"
         },
         "/Users/jacksonjames/projects/memory/raw-assets/main{m}/ui{tps}/button.png": {
             "isFolder": false,
@@ -557,17 +546,6 @@
             },
             "transformData": {},
             "hash": "ruM_yg"
-        },
-        "/Users/jacksonjames/projects/memory/raw-assets/main{m}/ui{tps}/redFlipIcon.png": {
-            "isFolder": false,
-            "parent": "/Users/jacksonjames/projects/memory/raw-assets/main{m}/ui{tps}",
-            "metaData": {},
-            "inheritedMetaData": {
-                "m": true,
-                "tps": true
-            },
-            "transformData": {},
-            "hash": "RnD2mQ"
         },
         "/Users/jacksonjames/projects/memory/raw-assets/main{m}/ui{tps}/rounded-rectangle.png": {
             "isFolder": false,

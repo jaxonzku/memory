@@ -22,7 +22,6 @@ import {
 } from "pixi.js";
 import { AppColors } from "../../theme/colors";
 import { AnimatedBackground } from "../../ui/AnimatedBackground";
-import { Label } from "../../ui/Label";
 
 /** The screen that holds the app */
 export class MainScreen extends Container {
@@ -46,12 +45,6 @@ export class MainScreen extends Container {
   private gameOver = false;
   private blueTurnPill!: Container;
   private redTurnPill!: Container;
-  private blueFreeFlip: FancyButton;
-  private redFreeFlip: FancyButton;
-  private freeFlipTooltip!: Container;
-  private blueFlipUsed = false;
-  private redFlipUsed = false;
-  private bonusAdPending = false;
   private readonly gameMode = getGameMode();
 
   private createTurnPill(
@@ -71,18 +64,16 @@ export class MainScreen extends Container {
 
     if (side === "left") {
       // TOP-LEFT quarter (faces inward)
-      bg.beginFill(bgColor);
       bg.moveTo(0, 0);
       bg.arc(0, 0, RADIUS, 0, Math.PI / 2);
       bg.lineTo(0, 0);
-      bg.endFill();
+      bg.fill(bgColor);
     } else {
       // TOP-RIGHT quarter (faces inward)
-      bg.beginFill(bgColor);
       bg.moveTo(SIZE, 0);
       bg.arc(SIZE, 0, RADIUS, Math.PI / 2, Math.PI);
       bg.lineTo(SIZE, 0);
-      bg.endFill();
+      bg.fill(bgColor);
     }
 
     const label = new Text({
@@ -124,18 +115,16 @@ export class MainScreen extends Container {
     // IMPORTANT: force container bounds
     container.hitArea = new Rectangle(0, 0, SIZE, SIZE);
     if (side === "left") {
-      bg.beginFill(bgColor);
       bg.moveTo(0, SIZE);
       bg.arc(0, SIZE, RADIUS, Math.PI * 1.5, Math.PI * 2);
       bg.lineTo(0, SIZE);
-      bg.endFill();
+      bg.fill(bgColor);
       // bg.stroke({ width: 5, color: AppColors.panelBase });
     } else {
-      bg.beginFill(bgColor);
       bg.moveTo(SIZE, SIZE);
       bg.arc(SIZE, SIZE, RADIUS, Math.PI, Math.PI * 1.5);
       bg.lineTo(SIZE, SIZE);
-      bg.endFill();
+      bg.fill(bgColor);
       // bg.stroke({ width: 5, color: AppColors.panelBase });
     }
 
@@ -166,35 +155,6 @@ export class MainScreen extends Container {
     container.addChild(bg, label);
     return { container, label };
   }
-
-  private createFreeFlipTooltip() {
-    const container = new Container();
-    const bg = new Graphics();
-    const label = new Label({
-      text: "Watch an ad to auto-flip 2 cards.",
-      style: {
-        fill: 0xffffff,
-        fontSize: 18,
-      },
-    });
-
-    const paddingX = 22;
-    const paddingY = 14;
-    const bounds = label.getLocalBounds();
-    const width = bounds.width + paddingX * 2;
-    const height = bounds.height + paddingY * 2;
-
-    bg.roundRect(-width / 2, -height / 2, width, height, 18)
-      .fill({ color: 0x126a9b, alpha: 0.96 })
-      .stroke({ width: 3, color: 0xffffff, alpha: 0.95 });
-
-    container.visible = false;
-    container.alpha = 0;
-    container.addChild(bg, label);
-
-    return { container, bg, label };
-  }
-
   constructor() {
     super();
     this.bgBlue = new Sprite(Texture.WHITE);
@@ -337,130 +297,6 @@ export class MainScreen extends Container {
       engine().navigation.presentPopup(SettingsPopup),
     );
     this.addChild(this.settingsButton);
-
-    this.blueFreeFlip = new FancyButton({
-      defaultView: "blueFlipIcon.png",
-      anchor: 0.5,
-      animations: buttonAnimations,
-    });
-    this.blueFreeFlip.onPress.connect(() => {
-      void this.handleRewardedAutoFlip("blue");
-    });
-    this.addChild(this.blueFreeFlip);
-    this.blueFreeFlip.alpha = isSinglePlayerMode() ? 0 : 1;
-    this.blueFreeFlip.visible = !isSinglePlayerMode();
-    this.blueFreeFlip.scale.set(0.15);
-    const blueBg = new Graphics();
-    blueBg.beginFill(0xffffff);
-    blueBg.drawCircle(0, 0, this.blueFreeFlip.width * 2.5);
-    blueBg.endFill();
-    this.blueFreeFlip.addChildAt(blueBg, 0);
-    this.blueFreeFlip.onHover.connect(() => {
-      this.showFreeFlipTooltip(this.blueFreeFlip);
-    });
-    this.blueFreeFlip.onOut.connect(() => {
-      this.hideFreeFlipTooltip();
-    });
-
-    this.redFreeFlip = new FancyButton({
-      defaultView: "redFlipIcon.png",
-      anchor: 0.5,
-      animations: buttonAnimations,
-    });
-    this.redFreeFlip.onPress.connect(() => {
-      void this.handleRewardedAutoFlip("red");
-    });
-    this.addChild(this.redFreeFlip);
-    this.redFreeFlip.alpha = isSinglePlayerMode() ? 0 : 1;
-    this.redFreeFlip.visible = !isSinglePlayerMode();
-    this.redFreeFlip.scale.set(0.15);
-    const redBg = new Graphics();
-    redBg.beginFill(0xffffff);
-    redBg.drawCircle(0, 0, this.redFreeFlip.width * 2.5);
-    redBg.endFill();
-    this.redFreeFlip.addChildAt(redBg, 0);
-    this.redFreeFlip.onHover.connect(() => {
-      this.showFreeFlipTooltip(this.redFreeFlip);
-    });
-    this.redFreeFlip.onOut.connect(() => {
-      this.hideFreeFlipTooltip();
-    });
-
-    const tooltip = this.createFreeFlipTooltip();
-    this.freeFlipTooltip = tooltip.container;
-    this.addChild(this.freeFlipTooltip);
-  }
-
-  private showFreeFlipTooltip(button: FancyButton) {
-    if (isSinglePlayerMode() || !button.visible) return;
-
-    this.freeFlipTooltip.x = button.x;
-    this.freeFlipTooltip.y = button.y + button.height * 0.9;
-    this.freeFlipTooltip.visible = true;
-    gsap.killTweensOf(this.freeFlipTooltip);
-    gsap.to(this.freeFlipTooltip, {
-      alpha: 1,
-      duration: 0.16,
-      ease: "power2.out",
-    });
-  }
-
-  private hideFreeFlipTooltip() {
-    gsap.killTweensOf(this.freeFlipTooltip);
-    gsap.to(this.freeFlipTooltip, {
-      alpha: 0,
-      duration: 0.14,
-      ease: "power2.out",
-      onComplete: () => {
-        this.freeFlipTooltip.visible = false;
-      },
-    });
-  }
-
-  private async handleRewardedAutoFlip(player: "blue" | "red") {
-    if (
-      isSinglePlayerMode() ||
-      this.gameOver ||
-      this.paused ||
-      this.bonusAdPending
-    ) {
-      return;
-    }
-
-    const alreadyUsed =
-      player === "blue" ? this.blueFlipUsed : this.redFlipUsed;
-    if (alreadyUsed || !this.grid.canStartAutoFlip(player)) return;
-
-    this.bonusAdPending = true;
-
-    try {
-      if (typeof PokiSDK === "undefined") return;
-
-      const audio = engine().audio;
-      const oldVolume = audio.getMasterVolume();
-      audio.setMasterVolume(0);
-
-      let success = false;
-      try {
-        success = await PokiSDK.rewardedBreak();
-      } finally {
-        audio.setMasterVolume(oldVolume);
-      }
-
-      if (!success) return;
-
-      if (player === "blue") {
-        this.blueFlipUsed = true;
-        this.blueFreeFlip.visible = false;
-      } else {
-        this.redFlipUsed = true;
-        this.redFreeFlip.visible = false;
-      }
-
-      await this.grid.startAutoFlip(player);
-    } finally {
-      this.bonusAdPending = false;
-    }
   }
 
   private endGame() {
@@ -531,18 +367,12 @@ export class MainScreen extends Container {
   public async pause() {
     this.mainContainer.interactiveChildren = false;
     this.paused = true;
-    if (typeof PokiSDK !== "undefined") {
-      PokiSDK.gameplayStop();
-    }
   }
 
   public async resume() {
     if (this.gameOver) return;
     this.mainContainer.interactiveChildren = true;
     this.paused = false;
-    if (typeof PokiSDK !== "undefined") {
-      PokiSDK.gameplayStart();
-    }
   }
 
   public reset() {}
@@ -567,13 +397,7 @@ export class MainScreen extends Container {
     this.blueScorePill.scale.set(hudScale);
     this.redScorePill.scale.set(hudScale);
 
-    // Add safe padding to avoid Poki bottom banner overlays on mobile
-    const isMobileDevice =
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent,
-      );
-    const SAFE_BOTTOM = isMobileDevice ? 85 : 0;
-    const BOTTOM_PADDING = Math.max(16, height * 0.02) + SAFE_BOTTOM;
+    const BOTTOM_PADDING = Math.max(16, height * 0.02);
     const BUTTON_GAP = 60;
 
     // PAUSE button → bottom center (left)
@@ -586,22 +410,6 @@ export class MainScreen extends Container {
     this.settingsButton.y =
       height - BOTTOM_PADDING - this.settingsButton.height * 0.5;
 
-    // BLUE FREE FLIP button → top center (left)
-    this.blueFreeFlip.x = width / 2 - BUTTON_GAP;
-    this.blueFreeFlip.y = this.blueFreeFlip.height * 0.5 + BOTTOM_PADDING;
-
-    // RED FREE FLIP button → top center (right)
-    this.redFreeFlip.x = width / 2 + BUTTON_GAP;
-    this.redFreeFlip.y = this.redFreeFlip.height * 0.5 + BOTTOM_PADDING;
-
-    if (this.freeFlipTooltip.visible) {
-      const anchorButton = this.redFreeFlip.visible
-        ? this.redFreeFlip
-        : this.blueFreeFlip;
-      this.freeFlipTooltip.x = anchorButton.x;
-      this.freeFlipTooltip.y = anchorButton.y + anchorButton.height * 0.9;
-    }
-
     // TOP-left
     this.blueTurnPill.x = 0;
     this.blueTurnPill.y = 0;
@@ -612,17 +420,14 @@ export class MainScreen extends Container {
 
     // BLUE – bottom-left
     this.blueScorePill.x = 0;
-    this.blueScorePill.y = height - hudSize - SAFE_BOTTOM;
+    this.blueScorePill.y = height - hudSize;
 
     // RED – bottom-right
     this.redScorePill.x = width - hudSize;
-    this.redScorePill.y = height - hudSize - SAFE_BOTTOM;
+    this.redScorePill.y = height - hudSize;
   }
 
   public async show(): Promise<void> {
-    if (typeof PokiSDK !== "undefined") {
-      PokiSDK.gameplayStart();
-    }
     await Assets.load([
       "/assets/preload/coookie_man.svg",
       "/assets/preload/cup_cake.svg",
